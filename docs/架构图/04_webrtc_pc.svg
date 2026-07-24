@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 680 380" width="680" height="380" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>WebRTC PeerConnection internal structure</title>
+<desc>实测结构：一个 PeerConnection 承载 1 路 RTP 视频（屏幕，不可靠）+ 3 条协商式 DataChannel：media(id=0，AEAD 帧兜底)、control(id=1，输入/剪贴板/文件/心跳，可靠+有序，consent 门控)、audio(id=2，音频)。</desc>
+<style>
+text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;}
+.t{font-size:14px;fill:#2C2C2A;}
+.ts{font-size:12px;fill:#5F5E5A;}
+.th{font-size:14px;font-weight:500;fill:#2C2C2A;}
+</style>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<rect x="0" y="0" width="680" height="380" fill="#FFFFFF"/>
+<rect x="30" y="140" width="110" height="70" rx="10" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+<text class="th" x="85" y="172" text-anchor="middle">Viewer</text>
+<text class="ts" x="85" y="192" text-anchor="middle">(you)</text>
+<rect x="540" y="140" width="110" height="70" rx="10" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+<text class="th" x="595" y="172" text-anchor="middle">Host</text>
+<text class="ts" x="595" y="192" text-anchor="middle">(remote)</text>
+<rect x="190" y="42" width="300" height="248" rx="14" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<text class="th" x="340" y="65" text-anchor="middle">PeerConnection (WebRTC)</text>
+<rect x="205" y="80" width="270" height="34" rx="8" fill="#FFFFFF" stroke="#D85A30" stroke-width="0.8"/>
+<text class="t" x="340" y="101" text-anchor="middle">RTP video · 屏幕 H.264 · 不可靠</text>
+<rect x="205" y="122" width="270" height="34" rx="8" fill="#FFFFFF" stroke="#D85A30" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text class="t" x="340" y="143" text-anchor="middle">DC#0 media · 兜底 · AEAD 帧</text>
+<rect x="205" y="164" width="270" height="34" rx="8" fill="#FFFFFF" stroke="#378ADD" stroke-width="0.8"/>
+<text class="ts" x="340" y="185" text-anchor="middle">DC#1 control · 输入/剪贴板/文件/心跳</text>
+<rect x="205" y="206" width="270" height="34" rx="8" fill="#FFFFFF" stroke="#1D9E75" stroke-width="0.8"/>
+<text class="t" x="340" y="227" text-anchor="middle">DC#2 audio · 音频</text>
+<text class="ts" x="340" y="262" text-anchor="middle">control 可靠 + 有序 · 负载 AEAD · 文件/剪贴板需逐次同意</text>
+<text class="ts" x="340" y="280" text-anchor="middle">三条 DataChannel 均 negotiated（id=0/1/2）</text>
+<path d="M140,175 L188,175" fill="none" stroke="#888780" stroke-width="1.4" marker-end="url(#arrow)"/>
+<path d="M492,175 L540,175" fill="none" stroke="#888780" stroke-width="1.4" marker-end="url(#arrow)"/>
+<text class="ts" x="340" y="326" text-anchor="middle">ICE 仅用 STUN/TURN 建连 · RTP 经 DTLS-SRTP · DataChannel 经 DTLS · 控制面再加 AEAD</text>
+<text class="ts" x="340" y="346" text-anchor="middle">带外校验指纹（TOFU）· 换网需 re-ICE，无无缝迁移</text>
+</svg>

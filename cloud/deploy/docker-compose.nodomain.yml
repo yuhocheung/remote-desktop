@@ -1,0 +1,60 @@
+# Remote Desktop 控制平面公网部署 —— 无域名纯 IP 联调版
+#
+# 与 docker-compose.yml 的差异：
+#   - 无域名 ⇒ 无法签发受信 TLS 证书 ⇒ 去掉 caddy，signaling 直接对外发布 ws://<IP>:8080。
+#   - 信令仅承载 SDP/ICE 元数据；媒体/输入走 WebRTC P2P（或 TURN 中继），全程 E2E 加密，
+#     明文 ws 只暴露握手元数据。仅限联调/自托管演示，生产请改用域名 + wss（见 docker-compose.yml）。
+#
+# 使用：
+#   1) cp .env.example .env，填 TURN_EXTERNAL_IP=<VPS公网IP>、TURN_USER / TURN_PASS（强随机）；
+#      DOMAIN 留空即可（本文件不引用）。
+#   2) docker compose -f docker-compose.nodomain.yml up -d --build
+#   3) VPS 安全组放行：3478/udp、49152-65535/udp、8080/tcp（8080 建议限源到自用 IP 段）。
+#   4) 客户端注入：
+#        RDCORE_SIGNALING=ws://<IP>:8080
+#        RDCORE_STUN=stun:<IP>:3478
+#        RDCORE_TURN_URL=turn:<IP>:3478?transport=udp
+#        RDCORE_TURN_USER=<turn 用户名>
+#        RDCORE_TURN_PASS=<turn 密码>
+#      iOS 端：App「设置」页填 STUN/TURN/用户名/密码；明文 ws 需 Info.plist ATS 例外
+#      （NSAllowsArbitraryLoads，联调专用，切 wss 后移除）。
+
+version: "3.8"
+
+services:
+  coturn:
+    image: coturn/coturn:latest
+    container_name: rdcore-coturn
+    restart: unless-stopped
+    # host 网络模式：TURN 需要监听大量 relay 端口（49152-65535），host 模式最省事。
+    network_mode: host
+    command:
+      - "--listening-port=${TURN_PORT:-3478}"
+      # STUN + TURN 同端口；realm 建议用域名，无域名时用默认即可。
+      - "--realm=${TURN_REALM:-rdcore}"
+      # 静态账号（长效凭据）。生产建议换 --use-auth-secret + rest api 动态凭据。
+      - "--user=${TURN_USER}:${TURN_PASS}"
+      # 中继端口段（对称 NAT 时为每个会话分配）。
+      - "--min-port=${TURN_MIN_PORT:-49152}"
+      - "--max-port=${TURN_MAX_PORT:-65535}"
+      # 公网 IP（NAT 后的 VPS 需显式指定外网地址，否则 relay 候选不可达）。
+      - "--external-ip=${TURN_EXTERNAL_IP}"
+      # 安全：禁 TCP relay（除非必须），只保留 UDP（低延迟媒体）。
+      - "--no-tcp-relay"
+      # 日志到 stdout 便于 docker logs。
+      - "--log-file=stdout"
+      - "--verbose"
+
+  signaling:
+    build:
+      context: ../../
+      dockerfile: cloud/deploy/Dockerfile.signaling
+    container_name: rdcore-signaling
+    restart: unless-stopped
+    environment:
+      # 直接对外明文监听（无域名 ⇒ 无 TLS）。开放模式：不设 SIGNALING_TOKEN_DB /
+      # SIGNALING_AUTH_TOKEN，连接仅按 session 是否注册放行；session 为 16 字节随机值
+      # 不可猜，内容层由 E2E 签名/同意门控兜底。公网多租户请勿用。
+      SIGNALING_ADDR: "0.0.0.0:8080"
+    ports:
+      - "8080:8080"

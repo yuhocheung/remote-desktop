@@ -1,0 +1,16 @@
+[workspace]
+members = [
+    "shared/*",
+    "core/crates/*",
+    "cloud/crates/*",
+    "web/rdcore-web",
+]
+resolver = "2"
+
+# 低驱动地板硬编方案（ffmpeg-next "7" → ffmpeg-sys-next 7.1.3）需要本补丁：
+# 7.1.3 锁定 bindgen 0.70，与本机 libclang 组合会把 AVFormatContext/AVOption/tm 等
+# 结构体错误生成为占位符（`pub _address: u8`），导致布局断言溢出（E0080）且安全层
+# 无法编译。vendored 副本仅把 bindgen 提升到 0.72（与 ffmpeg-sys-next 8.1.0 同款，
+# 已验证生成正确绑定）。详见 docs/ffmpeg_hw_lowfloor.md。
+[patch.crates-io]
+ffmpeg-sys-next = { path = "vendor/ffmpeg-sys-next" }

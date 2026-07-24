@@ -1,0 +1,80 @@
+{
+  "ok": true,
+  "mode": "filetransfer",
+  "headed": false,
+  "assertions": {
+    "consent": true,
+    "fileScopeGranted": true,
+    "uploadSha256": "0005e4d00e42a3d17f9ddd8624b34b2c58c1d9af11481b9e6d795826366d6750",
+    "uploadSize": 2621440,
+    "sentState": {
+      "id": 1,
+      "name": "upload.bin",
+      "size": 2621440,
+      "sha256": "0005e4d00e42a3d17f9ddd8624b34b2c58c1d9af11481b9e6d795826366d6750",
+      "state": "done",
+      "chunks": 3
+    },
+    "sentChunks": 3,
+    "sentChunksExpected3": true,
+    "sentPageSha256Matches": true,
+    "hostWroteFile": true,
+    "hostFileSha256": "0005e4d00e42a3d17f9ddd8624b34b2c58c1d9af11481b9e6d795826366d6750",
+    "hostFileMatches": true,
+    "probeOfferFileExists": true,
+    "probeOfferSha256": "94632707d06e1c097a5afa8fa6cba68c082e37aa210a91f8e1df926e03e5821b",
+    "incomingOfferShown": true,
+    "recvState": {
+      "id": 1592590338,
+      "name": "probe-offer.bin",
+      "size": 1572864,
+      "sha256": "94632707d06e1c097a5afa8fa6cba68c082e37aa210a91f8e1df926e03e5821b",
+      "chunks": 2,
+      "sizeOk": true
+    },
+    "recvName": "probe-offer.bin",
+    "recvSizeOk": true,
+    "recvChunks": 2,
+    "recvChunksExpected2": true,
+    "recvSha256MatchesProbeFile": true,
+    "downloadLinkReady": true,
+    "fileLog": [
+      "← Offer #1592590338 probe-offer.bin (1572864B)",
+      "→ Offer #1 upload.bin (2621440B, sha256=0005e4d00e42a3d1…)",
+      "← Accept #1，开始分片发送",
+      "→ Done #1（3 片）",
+      "→ Accept #1592590338",
+      "← Done #1592590338 probe-offer.bin（2 片, 1572864B, sha256=94632707d06e1c09…）"
+    ],
+    "knownLimitation": "rdcore-app AppMessage 无 FileTransfer 变体：文件事件走 rdcore-ffi Track B 线格式（postcard(Message::FileTransfer) 内层，AEAD 承载），探针 Host 以同一格式应答。"
+  },
+  "explainedTransientErrors": {
+    "signaling401RaceCount": 0,
+    "note": "token 库文件 reload/心跳重写 TOCTOU 竞争导致的瞬时 401（smoke 已重试自愈），属 core/cloud 侧既有问题，详见 README「已发现的既有产品问题」"
+  },
+  "round": {
+    "ok": true,
+    "label": "file-connect",
+    "statusAtConsent": "已获 Host 授权，接收画面…",
+    "sessionKeyFp": "8b3d32ed",
+    "hostFingerprint": "对端 rdcore-host 指纹: 4B 09 CD E8 FC 25 6F 96 C4 65 DA 1B D4 5E 69 C6 8F 7C D6 DD B4 D3 9B F9 C3 02 28 FA 72 6D 7C 51（请带外核对）",
+    "retried": false,
+    "attempts": 1
+  },
+  "console": [
+    "[log] 本机身份指纹: D3 C5 6C 92 EE BF 64 D3 70 7E 0A E4 D7 05 08 44 02 11 48 7F 29 68 8E F0 D7 8C 57 DF AC B2 65 0E",
+    "[log] PeerConnection: connecting",
+    "[log] PeerConnection: connected",
+    "[log] [rtc] media(0) open",
+    "[log] [rtc] control(1) open",
+    "[log] [rtc] audio(2) open",
+    "[log] 控制消息: consent {Consent: Object}",
+    "[log] consent scopes: [View, Input, FileTransfer, Clipboard] → input allowed = true",
+    "[log] 文件事件: Offer 1592590338",
+    "[log] 文件事件: Accept 1",
+    "[log] 文件事件: Chunk 1592590338",
+    "[log] 文件事件: Chunk 1592590338",
+    "[log] 文件事件: Done 1592590338"
+  ],
+  "errors": []
+}

@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "mode": "clipboard",
+  "headed": false,
+  "assertions": {
+    "consent": true,
+    "sessionKeyReady": true,
+    "clipboardScopeGranted": true,
+    "sendMarkedSent": true,
+    "hostReceivedFile": true,
+    "hostReceivedMatches": true,
+    "pulledText": "rdcore-probe 剪贴板应答 v1 — 固定文本 clipboard probe reply",
+    "pulledMatchesProbe": true,
+    "panelShowsPulled": true,
+    "systemClipboardReadback": "rdcore-probe 剪贴板应答 v1 — 固定文本 clipboard probe reply",
+    "systemClipboardMatches": true,
+    "knownLimitation": "真实 OS 剪贴板监听（Host 侧自动同步）不在探针范围；本场景验证协议双向通路 + 浏览器系统剪贴板写入。"
+  },
+  "explainedTransientErrors": {
+    "signaling401RaceCount": 0,
+    "note": "token 库文件 reload/心跳重写 TOCTOU 竞争导致的瞬时 401（smoke 已重试自愈），属 core/cloud 侧既有问题，详见 README「已发现的既有产品问题」"
+  },
+  "round": {
+    "ok": true,
+    "label": "clipboard-connect",
+    "statusAtConsent": "已获 Host 授权，接收画面…",
+    "sessionKeyFp": "a0996795",
+    "hostFingerprint": "对端 rdcore-host 指纹: 4B 09 CD E8 FC 25 6F 96 C4 65 DA 1B D4 5E 69 C6 8F 7C D6 DD B4 D3 9B F9 C3 02 28 FA 72 6D 7C 51（请带外核对）",
+    "retried": false,
+    "attempts": 1
+  },
+  "console": [
+    "[log] 本机身份指纹: E3 4B 67 A9 46 18 AB 67 4A D4 E2 D4 24 8A D4 5F 12 6F 9E D0 B7 C5 7E 16 7B FA 30 89 C5 A8 6A E9",
+    "[log] PeerConnection: connecting",
+    "[log] PeerConnection: connected",
+    "[log] [rtc] media(0) open",
+    "[log] [rtc] control(1) open",
+    "[log] [rtc] audio(2) open",
+    "[log] 控制消息: consent {Consent: Object}",
+    "[log] consent scopes: [View, Input, FileTransfer, Clipboard] → input allowed = true",
+    "[log] 文件事件: Offer 1592590338",
+    "[log] 控制消息: clipboard {Clipboard: Object}"
+  ],
+  "errors": []
+}

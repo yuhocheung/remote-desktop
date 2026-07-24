@@ -1,0 +1,34 @@
+[package]
+name = "gateway"
+version = "0.1.0"
+edition = "2021"
+description = "API gateway (routing, auth, rate limit, TLS termination)."
+license = "AGPL-3.0-only"
+
+[dependencies]
+# 四个控制面服务（库逻辑）。
+auth = { path = "../auth" }
+permission = { path = "../permission" }
+audit = { path = "../audit" }
+registry = { path = "../registry" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# HTTP 路由 + 异步运行时。
+axum = "0.8"
+tokio = { version = "1", features = ["full"] }
+tower = { version = "0.4", features = ["util"] }
+
+# TLS 终止（复用与 signaling-svc 一致的 rustls 后端）。
+axum-server = { version = "0.7", features = ["tls-rustls"] }
+# 显式启用 ring：单 crate 构建时 rustls 默认不带 Provider；与 rdcore-rtc（aws-lc-rs）
+# 联合构建时又会有两个 Provider——固定 ring 并显式 install_default（见 TLS 单测）。
+rustls = { version = "0.23", features = ["ring"] }
+rustls-pki-types = "1"
+rustls-pemfile = "2"
+base64 = "0.22"
+
+[dev-dependencies]
+# 自签证书用于 TLS 配置单元测试（dev 专用，不进入生产依赖树）。
+rcgen = "0.13"

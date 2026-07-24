@@ -1,0 +1,93 @@
+# Remote Desktop 控制平面公网部署（Track B / M0）
+#
+# 组成：
+#   - coturn        : TURN/STUN 中继（对称 NAT / 蜂窝↔家庭 NAT 兜底；媒体经此中继但仍 E2E 加密，TURN 只见 DTLS-SRTP 密文）
+#   - signaling-svc : 信令中继（仅转发 SDP/ICE；可选 per-session token / shared-secret 鉴权，见 B2；默认开放模式）
+#   - caddy         : TLS 终结 + wss 反代（signaling-svc 在内网跑明文，caddy 对外暴露 wss://host/signaling）
+#
+# 使用：
+#   1) 复制 .env.example 为 .env 并填值（域名 / TURN 凭据 / 信令 token）。
+#   2) docker compose up -d
+#   3) 客户端注入：
+#        RDCORE_STUN=stun:<domain>:3478
+#        RDCORE_TURN_URL=turn:<domain>:3478?transport=udp
+#        RDCORE_TURN_USER=<turn 用户名>
+#        RDCORE_TURN_PASS=<turn 密码>
+#      信令 URL：wss://<domain>/signaling/<32hex session_id>?token=<一次性 token>
+
+version: "3.8"
+
+services:
+  coturn:
+    image: coturn/coturn:latest
+    container_name: rdcore-coturn
+    restart: unless-stopped
+    # host 网络模式：TURN 需要监听大量 relay 端口（49152-65535），host 模式最省事。
+    network_mode: host
+    command:
+      - "--listening-port=${TURN_PORT:-3478}"
+      # STUN + TURN 同端口；realm 建议用域名。
+      - "--realm=${TURN_REALM:-rdcore}"
+      # 静态账号（长效凭据）。生产建议换 --use-auth-secret + rest api 动态凭据。
+      - "--user=${TURN_USER}:${TURN_PASS}"
+      # 中继端口段（对称 NAT 时为每个会话分配）。
+      - "--min-port=${TURN_MIN_PORT:-49152}"
+      - "--max-port=${TURN_MAX_PORT:-65535}"
+      # 公网 IP（NAT 后的 VPS 需显式指定外网地址，否则 relay 候选不可达）。
+      - "--external-ip=${TURN_EXTERNAL_IP}"
+      # 安全：禁 TCP relay（除非必须），只保留 UDP（低延迟媒体）。
+      - "--no-tcp-relay"
+      # 日志到 stdout 便于 docker logs。
+      - "--log-file=stdout"
+      - "--verbose"
+    volumes:
+      # 可选：挂载自定义 turnserver.conf 覆盖 command。
+      - ./turnserver.conf:/etc/coturn/turnserver.conf:ro
+
+  signaling:
+    build:
+      context: ../../
+      dockerfile: cloud/deploy/Dockerfile.signaling
+    container_name: rdcore-signaling
+    restart: unless-stopped
+    environment:
+      # 内网明文监听（caddy 对外终结 TLS → wss）。
+      SIGNALING_ADDR: "0.0.0.0:8080"
+
+      # ── 鉴权模式（三选一；都不设 = 开放模式，本部署默认）────────────
+      # 开放模式（默认，适合自托管演示）：不设置下面两个变量，连接仅按
+      # session 是否注册放行。session 为 16 字节随机值不可猜，但无任何凭据
+      # 校验。公网多租户请勿用。
+      #
+      # 同机 token 文件模式（仅当 Host 与 signaling-svc 在同一台机器时可用）：
+      #   SIGNALING_TOKEN_DB: /data/tokens.jsonl
+      # Host Agent 的 create_pairing() 把 session 写入该文件，握手时校验并焚毁
+      # 一次性 token。⚠️ 远程 VPS 部署时 Windows Host 无法写入 VPS 文件系统，
+      # 会导致每个连接被 401 拒绝 —— 远程部署不要启用。
+      #
+      # 预共享密钥模式（跨机可用，但当前 Host 不携带 token，会拒绝 Host）：
+      #   SIGNALING_AUTH_TOKEN: "change-me-shared-secret"
+    volumes:
+      - signaling-data:/data
+    expose:
+      - "8080"
+
+  caddy:
+    image: caddy:latest
+    container_name: rdcore-caddy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+      - "80:80"         # ACME http-01 挑战
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  signaling-data:
+  caddy-data:
+  caddy-config:

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>rdcore Web Viewer</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; font-family: system-ui, "Segoe UI", sans-serif;
+        background: #14161a; color: #e6e8eb;
+        display: flex; flex-direction: column; height: 100vh;
+      }
+      header {
+        padding: 10px 16px; display: flex; gap: 8px; align-items: center;
+        background: #1c1f26; border-bottom: 1px solid #2a2e38; flex-wrap: wrap;
+      }
+      header input {
+        background: #0f1114; color: #e6e8eb; border: 1px solid #3a3f4b;
+        border-radius: 6px; padding: 7px 10px; font: 13px/1.2 ui-monospace, monospace;
+      }
+      #pairing { width: 34em; }
+      #host { width: 22em; }
+      button {
+        background: #2f6fed; color: #fff; border: 0; border-radius: 6px;
+        padding: 8px 14px; cursor: pointer; font-size: 13px;
+      }
+      button:disabled { background: #3a3f4b; cursor: default; }
+      #status { font: 12px/1.4 ui-monospace, monospace; color: #9aa3b2; }
+      #inputState { font: 12px/1.4 ui-monospace, monospace; color: #7ee2a8; }
+      #inputToggle { background: #4a5568; }
+      #inputToggle:not(:disabled) { background: #2f8f5b; }
+      #fingerprint { color: #7ee2a8; }
+      main { flex: 1; display: flex; min-height: 0; }
+      #stage { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; position: relative; }
+      #stats {
+        position: absolute; top: 8px; left: 8px; z-index: 10; pointer-events: none;
+        font: 12px/1.4 ui-monospace, monospace; color: #7ee2a8;
+        background: rgba(15, 17, 20, 0.72); border-radius: 6px; padding: 4px 8px;
+      }
+      #stats:empty { display: none; }
+      canvas { max-width: 100%; max-height: 100%; background: #000; outline: none; touch-action: none; user-select: none; }
+      canvas:focus { box-shadow: 0 0 0 1px #2f6fed; }
+      aside {
+        width: 340px; flex: none; overflow-y: auto; padding: 10px 12px;
+        background: #1c1f26; border-left: 1px solid #2a2e38;
+        display: flex; flex-direction: column; gap: 14px; font-size: 13px;
+      }
+      /* 当前版本先隐藏右侧栏（剪贴板/文件/音频面板保留在 DOM 中，JS 事件绑定不受影响；
+         恢复时删除本行即可） */
+      aside { display: none; }
+      aside section { border: 1px solid #2a2e38; border-radius: 8px; padding: 10px; }
+      aside h2 { margin: 0 0 8px; font-size: 13px; color: #9aa3b2; font-weight: 600; }
+      aside textarea {
+        width: 100%; min-height: 56px; resize: vertical;
+        background: #0f1114; color: #e6e8eb; border: 1px solid #3a3f4b;
+        border-radius: 6px; padding: 6px 8px; font: 12px/1.4 ui-monospace, monospace;
+      }
+      aside .row { display: flex; gap: 6px; margin-top: 6px; align-items: center; flex-wrap: wrap; }
+      aside .state { margin-top: 6px; font: 12px/1.4 ui-monospace, monospace; color: #7ee2a8; word-break: break-all; }
+      aside button { padding: 6px 10px; font-size: 12px; }
+      aside button:disabled { background: #3a3f4b; }
+      #fileInput { font-size: 12px; max-width: 100%; color: #9aa3b2; }
+      #fileDownload { color: #7ee2a8; font-size: 12px; word-break: break-all; }
+      #audioToggle { background: #4a5568; }
+      #audioToggle:not(:disabled) { background: #2f8f5b; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <input id="host" placeholder="信令主机（如 signaling.example.com 或 ws://127.0.0.1:8080）" />
+      <input
+        id="pairing"
+        placeholder="配对码 <32hex session>:<64hex token>"
+        spellcheck="false"
+      />
+      <button id="connect">连接</button>
+      <button id="disconnect" title="手动断开（终态，不自动重连）">断开</button>
+      <button id="inputToggle" disabled title="远程键鼠控制开关（需 Host 授权 Input）">输入：关</button>
+      <span id="status">未连接</span>
+      <span id="inputState" title="consent 授权门控：仅当 Host 授予 Input scope 时可开启"></span>
+      <span id="fingerprint" title="对端公钥指纹（请带外核对）"></span>
+    </header>
+    <main>
+      <div id="stage">
+        <canvas id="screen" width="1280" height="720" tabindex="0"></canvas>
+        <div id="stats" title="链路统计：帧率 · 吞吐 · 往返时延 · 候选对类型(host/srflx/relay) · 解码队列 · 背压丢帧"></div>
+      </div>
+      <aside>
+        <section id="secClipboard">
+          <h2>剪贴板</h2>
+          <textarea id="clipText" placeholder="输入文本，点击「发送到 Host」" spellcheck="false"></textarea>
+          <div class="row" style="margin-bottom: 20px;">
+            <button id="clipSend" disabled title="发送面板文本到 Host 剪贴板（需 Clipboard 授权）">发送到 Host</button>
+            <button id="clipPull" disabled title="拉取 Host 剪贴板内容并写入本机系统剪贴板">拉取 Host 剪贴板</button>
+          </div>
+          <textarea id="clipRecv" readonly placeholder="收到的 Host 剪贴板内容" spellcheck="false"></textarea>
+          <div class="state" id="clipState">未连接</div>
+        </section>
+        <section id="secFile">
+          <h2>文件传输</h2>
+          <input id="fileInput" type="file" />
+          <div class="row">
+            <button id="fileSend" disabled title="发送所选文件到 Host（需 FileTransfer 授权）">发送文件到 Host</button>
+          </div>
+          <div class="state" id="fileSendState">未连接</div>
+          <div id="fileOffer" hidden class="row">
+            <span id="fileOfferName"></span>
+            <button id="fileAccept">接受</button>
+            <button id="fileReject">拒绝</button>
+          </div>
+          <div class="state" id="fileRecvState"></div>
+          <a id="fileDownload" hidden></a>
+        </section>
+        <section id="secAudio">
+          <h2>音频</h2>
+          <div class="row">
+            <button id="audioToggle" title="Host 音频播放开关（静音/取消静音）">音频：开</button>
+          </div>
+          <div class="state" id="audioState">等待音频流…</div>
+        </section>
+      </aside>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

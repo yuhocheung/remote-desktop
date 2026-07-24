@@ -1,0 +1,122 @@
+{
+  "ok": true,
+  "mode": "reconnect",
+  "headed": false,
+  "assertions": {
+    "roundsConsent": true,
+    "roundsFrames": true,
+    "keyRotatedAfterReload": true,
+    "viewerIdentityRotated": true,
+    "hostFingerprintStable": true,
+    "sessionKeyFps": [
+      "eb09ced7",
+      "47e0b1bf",
+      "a50730ea"
+    ],
+    "viewerFps": [
+      "F3 CF 46 64 AC BC B6 36 DD 67 C8 81 2B 9A 5F 8D 35 71 E2 B2 72 C3 BA 1A 0A EE C2 BD 0D B9 D9 80",
+      "1C 70 BA AB 05 FE 2E 88 0E 37 2D 4C 5C 3C 2B A7 FD C9 1B E0 3D BF F2 D0 A8 7A 52 42 5D 23 02 F2",
+      "CB E3 8B 81 97 EC 0F 87 6C 9D 20 4B 56 61 37 E5 10 56 D0 F6 A0 6D 06 0F 57 2D A5 07 B8 18 31 C7"
+    ],
+    "roundsRetriedAfter401": 0
+  },
+  "explainedTransientErrors": {
+    "signaling401RaceCount": 0,
+    "note": "token 库文件 reload/心跳重写 TOCTOU 竞争导致的瞬时 401（smoke 已重试自愈），属 core/cloud 侧既有问题，详见 README「已发现的既有产品问题」"
+  },
+  "rounds": [
+    {
+      "ok": true,
+      "label": "round1-initial",
+      "statusAtConsent": "已获 Host 授权，接收画面…",
+      "statusFinal": "首帧已渲染，投屏中…",
+      "hostFingerprint": "对端 rdcore-host 指纹: 4B 09 CD E8 FC 25 6F 96 C4 65 DA 1B D4 5E 69 C6 8F 7C D6 DD B4 D3 9B F9 C3 02 28 FA 72 6D 7C 51（请带外核对）",
+      "viewerFp": "F3 CF 46 64 AC BC B6 36 DD 67 C8 81 2B 9A 5F 8D 35 71 E2 B2 72 C3 BA 1A 0A EE C2 BD 0D B9 D9 80",
+      "sessionKeyFp": "eb09ced7",
+      "consented": true,
+      "framesAtFirst": 1,
+      "framesFinal": 13,
+      "lastFrame": {
+        "width": 1280,
+        "height": 720,
+        "lum": 31,
+        "std": 0,
+        "diff": 0
+      },
+      "frameStats": {
+        "maxStd": 0,
+        "maxDiff": 0
+      },
+      "retried": false,
+      "attempts": 1
+    },
+    {
+      "ok": true,
+      "label": "round2-after-reload",
+      "statusAtConsent": "已获 Host 授权，接收画面…",
+      "statusFinal": "首帧已渲染，投屏中…",
+      "hostFingerprint": "对端 rdcore-host 指纹: 4B 09 CD E8 FC 25 6F 96 C4 65 DA 1B D4 5E 69 C6 8F 7C D6 DD B4 D3 9B F9 C3 02 28 FA 72 6D 7C 51（请带外核对）",
+      "viewerFp": "1C 70 BA AB 05 FE 2E 88 0E 37 2D 4C 5C 3C 2B A7 FD C9 1B E0 3D BF F2 D0 A8 7A 52 42 5D 23 02 F2",
+      "sessionKeyFp": "47e0b1bf",
+      "consented": true,
+      "framesAtFirst": 1,
+      "framesFinal": 12,
+      "lastFrame": {
+        "width": 1280,
+        "height": 720,
+        "lum": 31,
+        "std": 0,
+        "diff": 0
+      },
+      "frameStats": {
+        "maxStd": 0,
+        "maxDiff": 0
+      },
+      "retried": false,
+      "attempts": 1
+    },
+    {
+      "ok": true,
+      "label": "round3-after-tab-close",
+      "statusAtConsent": "已获 Host 授权，接收画面…",
+      "statusFinal": "首帧已渲染，投屏中…",
+      "hostFingerprint": "对端 rdcore-host 指纹: 4B 09 CD E8 FC 25 6F 96 C4 65 DA 1B D4 5E 69 C6 8F 7C D6 DD B4 D3 9B F9 C3 02 28 FA 72 6D 7C 51（请带外核对）",
+      "viewerFp": "CB E3 8B 81 97 EC 0F 87 6C 9D 20 4B 56 61 37 E5 10 56 D0 F6 A0 6D 06 0F 57 2D A5 07 B8 18 31 C7",
+      "sessionKeyFp": "a50730ea",
+      "consented": true,
+      "framesAtFirst": 1,
+      "framesFinal": 12,
+      "lastFrame": {
+        "width": 1280,
+        "height": 720,
+        "lum": 31,
+        "std": 0,
+        "diff": 0
+      },
+      "frameStats": {
+        "maxStd": 0,
+        "maxDiff": 0
+      },
+      "retried": false,
+      "attempts": 1
+    }
+  ],
+  "console": [
+    "[log] 本机身份指纹: F3 CF 46 64 AC BC B6 36 DD 67 C8 81 2B 9A 5F 8D 35 71 E2 B2 72 C3 BA 1A 0A EE C2 BD 0D B9 D9 80",
+    "[log] PeerConnection: connecting",
+    "[log] PeerConnection: connected",
+    "[log] 控制消息: consent {Consent: Object}",
+    "[log] consent scopes: [Input, View] → input allowed = true",
+    "[log] 本机身份指纹: 1C 70 BA AB 05 FE 2E 88 0E 37 2D 4C 5C 3C 2B A7 FD C9 1B E0 3D BF F2 D0 A8 7A 52 42 5D 23 02 F2",
+    "[log] PeerConnection: connecting",
+    "[log] PeerConnection: connected",
+    "[log] 控制消息: consent {Consent: Object}",
+    "[log] consent scopes: [Input, View] → input allowed = true",
+    "[log] 本机身份指纹: CB E3 8B 81 97 EC 0F 87 6C 9D 20 4B 56 61 37 E5 10 56 D0 F6 A0 6D 06 0F 57 2D A5 07 B8 18 31 C7",
+    "[log] PeerConnection: connecting",
+    "[log] PeerConnection: connected",
+    "[log] 控制消息: consent {Consent: Object}",
+    "[log] consent scopes: [Input, View] → input allowed = true"
+  ],
+  "errors": []
+}

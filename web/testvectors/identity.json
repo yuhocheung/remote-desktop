@@ -1,0 +1,32 @@
+{
+  "description": "固定种子的确定性身份 + KDF + 口令导出向量（fingerprint = SHA-256(公钥) 空格分隔大写 hex）",
+  "export": {
+    "blob_hex": "e0e1e2e3e4e5e6e7e8e9eaebecedeeef808182838485868788898a8b8c8d8e8f909192939495969793c24beb6254c8251c091ba20bbe5812159fcc4d2ee3286a217c5d70cf7361707e9807a7cf98dff81da5d5871d50ac454f35e2f9e0c9a3b85272eb51f4e66e9db0927a2bd68ecb48d2d28dbc1114f311a2bfa11b2d3935848cafefede0cc09b0031acc61119c00518f8fe6121d4d52a1106856a41dd4524eced12a731c464387489422cc7db254057165fef7d610b0010044b3c66d1003281559c74a6ff65872b802e3f062a76d3fca020bcaf474869f1f944a7b29a25c331500d4e1",
+    "expect_public_key_hex": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "format": "[salt(16)][nonce(24)][XChaCha20Poly1305(JSON{device_id_hex,secret_key_hex,display_name})]",
+    "nonce_hex": "808182838485868788898a8b8c8d8e8f9091929394959697",
+    "passphrase": "web-test-passphrase",
+    "salt_hex": "e0e1e2e3e4e5e6e7e8e9eaebecedeeef"
+  },
+  "host": {
+    "device_id_hex": "b0b1b2b3b4b5b6b7b8b9babbbcbdbebf",
+    "display_name": "windows-host-fixture",
+    "fingerprint": "24 F6 ED 6A CB FE 10 09 C0 30 D7 CA 56 7C 33 CA 48 30 91 14 98 23 6B 55 61 A6 C8 2A BE C5 DE 28",
+    "public_key_hex": "29acbae141bccaf0b22e1a94d34d0bc7361e526d0bfe12c89794bc9322966dd7",
+    "seed_hex": "202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f"
+  },
+  "kdf": {
+    "algorithm": "SHA-256(passphrase || salt) 迭代 100000 次（rdcore-identity PassphraseKeyProvider）",
+    "iterations": 100000,
+    "key_hex": "38bd531a19d9464a3d696dc1c7cfb20b5953c0feb257fce6b3290ce479a68719",
+    "passphrase": "web-test-passphrase",
+    "salt_hex": "d0d1d2d3d4d5d6d7d8d9dadbdcdddedf"
+  },
+  "viewer": {
+    "device_id_hex": "a0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+    "display_name": "web-viewer-fixture",
+    "fingerprint": "56 47 5A A7 54 63 47 4C 02 85 DF 5D BF 2B CA B7 3D A6 51 35 88 39 E9 B7 74 81 B2 EA B1 07 70 8C",
+    "public_key_hex": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "seed_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+  }
+}

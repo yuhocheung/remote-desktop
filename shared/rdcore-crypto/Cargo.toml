@@ -1,0 +1,22 @@
+# P0 契约层 · 密码学类型 crate：定义密钥/签名/指纹类型与 CryptoProvider 接口（无实现）。
+[package]
+name = "rdcore-crypto"
+version = "0.1.0"
+edition = "2021"
+description = "Cryptographic key/signature/fingerprint types and the CryptoProvider interface."
+license = "AGPL-3.0-only"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+# 密钥零化（加固）：私钥/会话密钥在丢弃时清零内存，防冷启动/内存抓取泄露。
+zeroize = "1"
+serde-big-array = "0.5"
+# 具体密码学后端（P4 落地）：Ed25519 签名/验签 + SHA-256 指纹 + 系统随机数。
+# 这些类型与本 crate 的数据类型天然匹配：公钥/私钥 32 字节、签名 64 字节、指纹 32 字节。
+ed25519-dalek = "2"
+sha2 = "0.10"
+getrandom = "0.2"
+# P5 端到端加密原语：X25519 临时密钥协商 + ChaCha20Poly1305（XChaCha）AEAD。
+# static_secrets 特性才导出 StaticSecret 与其 diffie_hellman / From 实现（默认关闭）。
+x25519-dalek = { version = "2", features = ["static_secrets"] }
+chacha20poly1305 = "0.10"

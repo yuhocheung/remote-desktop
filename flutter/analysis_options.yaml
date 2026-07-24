@@ -1,0 +1,8 @@
+include: package:flutter_lints/flutter.yaml
+
+# P6 专用附加规则（其余沿用 flutter_lints 默认集）。
+linter:
+  rules:
+    avoid_print: true
+    prefer_const_constructors: true
+    use_build_context_synchronously: true

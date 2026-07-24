@@ -1,0 +1,51 @@
+[package]
+name = "rdcore-ffi"
+version = "0.1.0"
+edition = "2021"
+description = "C ABI bridge (cdylib) exposing the Rust core to Flutter/Dart via dart:ffi."
+license = "AGPL-3.0-only"
+
+[lib]
+# cdylib 给 Dart 动态链接（Windows/Linux/macOS .dll/.so/.dylib）；
+# staticlib 给 iOS 静态链入 app（DynamicLibrary.process()）；
+# rlib 让本 crate 的 Rust 单测能直接调用。
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+rdcore-crypto = { path = "../../../shared/rdcore-crypto" }
+rdcore-identity = { path = "../../../shared/rdcore-identity" }
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+rdcore-session = { path = "../rdcore-session" }
+rdcore-consent = { path = "../rdcore-consent" }
+rdcore-media = { path = "../rdcore-media" }
+rdcore-audio = { path = "../rdcore-audio" }
+rdcore-capture = { path = "../rdcore-capture" }
+# 通用依赖：所有平台都需要（lib.rs 在 Windows 下也无条件 use rdcore_app / rdcore_render /
+# rdcore_decode / rdcore_rtc，不仅非 Windows viewer；此外 postcard/serde_json/hex/getrandom/
+# tokio 也是无条件使用）。全部放在主 [dependencies]，不能嵌套进 target 段，否则 Windows
+# 构建缺依赖（此前误置于 not-windows 目标块、并被畸形嵌套进 rdcore-encode 子表）。
+rdcore-decode = { path = "../rdcore-decode" }
+rdcore-render = { path = "../rdcore-render" }
+rdcore-rtc = { path = "../rdcore-rtc" }
+rdcore-app = { path = "../rdcore-app" }
+postcard = "1"
+hex = "0.4"
+serde_json = "1"
+getrandom = "0.2"
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "time", "sync", "macros"] }
+
+# 硬件 H.264 编码仅在 Windows 构建开启 `hwcodec`（与 rdcore-app 一致；FFI 即实际发布的 dll）。
+[target.'cfg(windows)'.dependencies.rdcore-encode]
+path = "../rdcore-encode"
+features = ["hwcodec"]
+
+[target.'cfg(not(windows))'.dependencies.rdcore-encode]
+path = "../rdcore-encode"
+
+# 集成测试（真实 WebRTC 端到端）需要起一个进程内信令服务器。
+[dev-dependencies]
+signaling-svc = { path = "../../../cloud/crates/signaling-svc" }
+# 解决 rustls CryptoProvider 歧义：webrtc 启用 rustls/ring，而 gateway(axum-server tls-rustls)
+# 启用 rustls/aws-lc-rs，二者并存导致 rustls 0.23 无法自动判定默认 provider。
+# 测试内显式 install_default(ring) 化解歧义；此处把 ring feature 直接编译进测试二进制。
+rustls = { version = "0.23", features = ["ring"] }

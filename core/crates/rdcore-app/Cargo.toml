@@ -1,0 +1,47 @@
+[package]
+name = "rdcore-app"
+version = "0.1.0"
+edition = "2021"
+description = "端到端连接编排层（P0–P7 之上的胶水）：把身份/验签/WebRTC/会话密钥/同意门控/媒体串成一条可运行连接。与 Flutter ConnectionController 对称。"
+# 许可修正（Task #74）：闭源 Windows Agent + iOS App Store 分发与 AGPL 冲突，改为双宽松许可。
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+rdcore-identity = { path = "../../../shared/rdcore-identity" }
+rdcore-crypto = { path = "../../../shared/rdcore-crypto" }
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+rdcore-session = { path = "../rdcore-session" }
+rdcore-consent = { path = "../rdcore-consent" }
+rdcore-media = { path = "../rdcore-media" }
+rdcore-signaling = { path = "../rdcore-signaling" }
+rdcore-rtc = { path = "../rdcore-rtc" }
+rdcore-capture = { path = "../rdcore-capture" }
+rdcore-audio = { path = "../rdcore-audio" }
+# 硬件 H.264 编码（Media Foundation / NVENC / QSV / AMF）仅在 Windows 构建开启 `hwcodec`：
+# `rdcore-app` 是 Host 编码的唯一调用点（host_media.rs → new_encoder），此处开启后
+# 自动传播到所有 Windows 二进制（rdcore-ffi.dll / rdcore-desktop.exe），无需手动传 flag。
+# 平台无关依赖（此前误置于 not-windows 目标块、且被畸形嵌套进 rdcore-encode 子表，
+# 导致 Windows 构建缺依赖无法编译；移至主 [dependencies] 修正）。
+rdcore-decode = { path = "../rdcore-decode" }
+rdcore-render = { path = "../rdcore-render" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+postcard = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time", "net"] }
+getrandom = "0.2"
+hex = "0.4"
+
+[target.'cfg(windows)'.dependencies.rdcore-encode]
+path = "../rdcore-encode"
+features = ["hwcodec"]
+
+[target.'cfg(not(windows))'.dependencies.rdcore-encode]
+path = "../rdcore-encode"
+
+[dev-dependencies]
+signaling-svc = { path = "../../../cloud/crates/signaling-svc" }
+# 显式锁定 rustls 的 CryptoProvider 为 ring（与 rdcore-ffi 测试一致）。
+# webrtc-rs(ring) 与信令/网关链路可能同时拉入 aws-lc-rs，导致 rustls 0.23
+# `from_crate_features()` 无法自动判定；在测试入口 `install_default()` 可彻底规避，
+# 避免「establish 超时 / 握手卡住」的误报。
+rustls = { version = "0.23", features = ["ring"] }

@@ -1,0 +1,109 @@
+# Web Viewer 站点配置（与 cloud/deploy/Caddyfile 同一台 Caddy 共存时，
+# 把对应变体的站点块并入现有 Caddyfile 即可；/signaling 反代约定保持一致：
+# handle_path 剥离前缀，signaling-svc 按「路径首段 = session_hex」鉴权）。
+#
+# 共用响应头说明：
+# - COOP/COEP：开启 crossOriginIsolated（SharedArrayBuffer 可用 + 收窄 Spectre 面）。
+# - try_files … /index.html：SPA 回退（单页应用刷新不 404）。
+
+# ─────────────────────────────────────────────────────────────
+# 变体 A：域名 + 自动 HTTPS（推荐；Caddy 自动签发/续期域名证书）
+# ─────────────────────────────────────────────────────────────
+rd.example.com {
+	root * /srv/rdcore-web/dist
+	encode zstd gzip
+
+	# 静态资产带内容哈希：长缓存 + immutable；HTML 入口不带哈希：no-cache
+	# （否则浏览器启发式缓存 index.html，部署新版后用户拿不到新 bundle 引用）。
+	@static path /assets/*
+	header @static Cache-Control "public, max-age=31536000, immutable"
+	@html path / /index.html
+	header @html Cache-Control "no-cache"
+
+	# 信令 WebSocket：wss://<domain>/signaling/<session>?token=...
+	# （剥离 /signaling 前缀后转给内网明文 signaling-svc）
+	handle_path /signaling/* {
+		reverse_proxy 127.0.0.1:8080
+	}
+
+	handle {
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Embedder-Policy "require-corp"
+		-Server
+	}
+}
+
+# ─────────────────────────────────────────────────────────────
+# 变体 B：公网 IP + Let's Encrypt IP 证书（无域名）
+#
+# IP 证书 = shortlived profile，有效期 160h（约 6.6 天），只能用
+# http-01 / tls-alpn-01 验证（需 80/443 公网可达），必须自动续签。
+# 推荐用 acme.sh 申请后交给 Caddy 使用（Caddy ≥ 2.10 的 ACME profile
+# 原生支持仍在各版本演进中，以 acme.sh 为准最稳）：
+#
+#   acme.sh --issue -d 8.138.237.243 -w /srv/rdcore-web/dist \
+#     --server letsencrypt --cert-profile shortlived
+#   mkdir -p /etc/caddy/certs
+#   acme.sh --install-cert -d 8.138.237.243 --ecc \
+#     --key-file       /etc/caddy/certs/ip.key  \
+#     --fullchain-file /etc/caddy/certs/ip.cer  \
+#     --reloadcmd     "systemctl reload caddy"
+#
+# 续期：acme.sh 若用 --nocron 安装，需自建 systemd timer 每日执行
+#   acme.sh --cron --home /root/.acme.sh
+#
+# ★ 必须配置 default_sni（全局块）：浏览器访问 IP 字面量不发 SNI
+#   （Windows Schannel 更是直接不支持），无 default_sni 时 Caddy 选不中
+#   证书会直接中止 TLS 握手（alert internal error / SEC_E_INTERNAL_ERROR）。
+#   站点地址用裸 IP（不带 https:// 前缀）才会自动获得 80→443 跳转。
+# ─────────────────────────────────────────────────────────────
+#{
+#	default_sni 8.138.237.243
+#}
+
+8.138.237.243 {
+	tls /etc/caddy/certs/ip.cer /etc/caddy/certs/ip.key
+
+	root * /srv/rdcore-web/dist
+	encode zstd gzip
+
+	@static path /assets/*
+	header @static Cache-Control "public, max-age=31536000, immutable"
+	@html path / /index.html
+	header @html Cache-Control "no-cache"
+
+	handle_path /signaling/* {
+		reverse_proxy 127.0.0.1:8080
+	}
+
+	handle {
+		try_files {path} /index.html
+		file_server
+	}
+
+	header {
+		Cross-Origin-Opener-Policy "same-origin"
+		Cross-Origin-Embedder-Policy "require-corp"
+		-Server
+	}
+}
+
+# ─────────────────────────────────────────────────────────────
+# 变体 C：仅 HTTP 内网测试（功能受限：WebCodecs/剪贴板不可用，
+# 仅当部署目的为验证连通性时使用；生产请勿使用）
+# ─────────────────────────────────────────────────────────────
+#http://8.138.237.243 {
+#	root * /srv/rdcore-web/dist
+#	handle_path /signaling/* {
+#		reverse_proxy 127.0.0.1:8080
+#	}
+#	handle {
+#		try_files {path} /index.html
+#		file_server
+#	}
+#}

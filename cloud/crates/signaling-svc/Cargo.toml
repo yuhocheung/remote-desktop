@@ -1,0 +1,33 @@
+# signaling-svc — 信令中继服务（仅转发 SDP/ICE，不处理媒体或控制数据）。
+#
+# 对应架构文档 §1/§5：控制通道走 WebSocket，本服务只做按 session_id 的纯中继，
+# 不解析/不处理消息内容；接收侧强制 P0 的 decode_limited（F3 上限）防分配炸弹。
+
+[package]
+name = "signaling-svc"
+version = "0.1.0"
+edition = "2021"
+description = "Signaling service (SDP/ICE relay only)."
+license = "AGPL-3.0-only"
+
+[dependencies]
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.24"
+futures-util = "0.3"
+# 缺口 L / P0-D 后续：信令 TLS（wss://）加密 + per-session token 哈希校验。
+rustls = "0.23"
+tokio-rustls = "0.26"
+rustls-pemfile = "2"
+sha2 = "0.10"
+
+[dev-dependencies]
+# 自签证书用于 wss 集成测试（dev 专用）。
+rcgen = "0.13"
+rustls-pki-types = "1"
+# 为集成测试启用 wss 客户端连接器（__rustls-tls）。
+tokio-tungstenite = { version = "0.24", features = ["__rustls-tls"] }
+
+[[bin]]
+name = "signaling-svc"
+path = "src/main.rs"

@@ -1,0 +1,308 @@
+{
+  "ok": true,
+  "mode": "input",
+  "headed": true,
+  "assertions": {
+    "consent": true,
+    "firstFrame": true,
+    "streamContinues": true,
+    "inputAllowed": true,
+    "inputEnabledByDefault": true,
+    "frameSize": "3440x1440",
+    "mapMoveCenter": true,
+    "mapMoveQuarter": true,
+    "mapMouseButtons": true,
+    "mapWheel": true,
+    "mapKeyWithChar": true,
+    "mapFunctionalKey": true,
+    "mapShortcutNoChar": true,
+    "seqMonotonic": true,
+    "sentTotal": 18,
+    "sentLog": [
+      {
+        "kind": "MouseMove",
+        "x": 1720,
+        "y": 720,
+        "seq": "4"
+      },
+      {
+        "kind": "MouseMove",
+        "x": 860,
+        "y": 360,
+        "seq": "5"
+      },
+      {
+        "kind": "MouseMove",
+        "x": 860,
+        "y": 360,
+        "seq": "6"
+      },
+      {
+        "kind": "MouseButton",
+        "button": 0,
+        "pressed": true,
+        "seq": "7"
+      },
+      {
+        "kind": "MouseButton",
+        "button": 0,
+        "pressed": false,
+        "seq": "8"
+      },
+      {
+        "kind": "MouseMove",
+        "x": 860,
+        "y": 360,
+        "seq": "9"
+      },
+      {
+        "kind": "MouseButton",
+        "button": 2,
+        "pressed": true,
+        "seq": "10"
+      },
+      {
+        "kind": "MouseButton",
+        "button": 2,
+        "pressed": false,
+        "seq": "11"
+      },
+      {
+        "kind": "MouseWheel",
+        "deltaX": 0,
+        "deltaY": 2,
+        "seq": "12"
+      },
+      {
+        "kind": "MouseWheel",
+        "deltaX": 0,
+        "deltaY": -1,
+        "seq": "13"
+      },
+      {
+        "kind": "KeyWithChar",
+        "keyCode": 65,
+        "character": "a",
+        "pressed": true,
+        "modifiers": 0,
+        "seq": "14"
+      },
+      {
+        "kind": "KeyWithChar",
+        "keyCode": 65,
+        "character": "a",
+        "pressed": false,
+        "modifiers": 0,
+        "seq": "15"
+      },
+      {
+        "kind": "Key",
+        "keyCode": 13,
+        "pressed": true,
+        "modifiers": 0,
+        "seq": "16"
+      },
+      {
+        "kind": "Key",
+        "keyCode": 13,
+        "pressed": false,
+        "modifiers": 0,
+        "seq": "17"
+      },
+      {
+        "kind": "Key",
+        "keyCode": 162,
+        "pressed": true,
+        "modifiers": 2,
+        "seq": "18"
+      },
+      {
+        "kind": "Key",
+        "keyCode": 67,
+        "pressed": true,
+        "modifiers": 2,
+        "seq": "19"
+      },
+      {
+        "kind": "Key",
+        "keyCode": 67,
+        "pressed": false,
+        "modifiers": 2,
+        "seq": "20"
+      },
+      {
+        "kind": "Key",
+        "keyCode": 162,
+        "pressed": false,
+        "modifiers": 0,
+        "seq": "21"
+      }
+    ],
+    "inputToggleOffWorks": true,
+    "osTarget": {
+      "tx": 710,
+      "ty": 460,
+      "dpr": 1
+    },
+    "hostInjectedMove": true,
+    "hostInjectedClick": true,
+    "hostInjectedRightClick": true,
+    "hostInjectedWheelSigns": true,
+    "hostInjectedChar": true,
+    "hostInjectedEnter": true,
+    "osProbeEventCount": 15,
+    "osProbeSample": [
+      {
+        "type": "mousemove",
+        "button": 0,
+        "screenX": 710,
+        "screenY": 460,
+        "dpr": 1,
+        "t": 1784837682020
+      },
+      {
+        "type": "mousedown",
+        "button": 0,
+        "screenX": 710,
+        "screenY": 460,
+        "dpr": 1,
+        "t": 1784837682056
+      },
+      {
+        "type": "mouseup",
+        "button": 0,
+        "screenX": 710,
+        "screenY": 460,
+        "dpr": 1,
+        "t": 1784837682058
+      },
+      {
+        "type": "mousedown",
+        "button": 2,
+        "screenX": 710,
+        "screenY": 460,
+        "dpr": 1,
+        "t": 1784837682071
+      },
+      {
+        "type": "mouseup",
+        "button": 2,
+        "screenX": 710,
+        "screenY": 460,
+        "dpr": 1,
+        "t": 1784837682071
+      },
+      {
+        "type": "contextmenu",
+        "button": 2,
+        "screenX": 710,
+        "screenY": 460,
+        "dpr": 1,
+        "t": 1784837682071
+      },
+      {
+        "type": "wheel",
+        "button": 0,
+        "screenX": 710,
+        "screenY": 460,
+        "deltaX": 0,
+        "deltaY": 200,
+        "dpr": 1,
+        "t": 1784837682083
+      },
+      {
+        "type": "wheel",
+        "button": 0,
+        "screenX": 710,
+        "screenY": 460,
+        "deltaX": 0,
+        "deltaY": -200,
+        "dpr": 1,
+        "t": 1784837682089
+      },
+      {
+        "type": "keydown",
+        "key": "a",
+        "dpr": 1,
+        "t": 1784837682100
+      },
+      {
+        "type": "keypress",
+        "key": "a",
+        "dpr": 1,
+        "t": 1784837682100
+      },
+      {
+        "type": "keyup",
+        "key": "a",
+        "dpr": 1,
+        "t": 1784837682100
+      },
+      {
+        "type": "keyup",
+        "key": "a",
+        "dpr": 1,
+        "t": 1784837682102
+      },
+      {
+        "type": "keydown",
+        "key": "Enter",
+        "dpr": 1,
+        "t": 1784837682111
+      },
+      {
+        "type": "keypress",
+        "key": "Enter",
+        "dpr": 1,
+        "t": 1784837682111
+      },
+      {
+        "type": "keyup",
+        "key": "Enter",
+        "dpr": 1,
+        "t": 1784837682112
+      }
+    ],
+    "framesStillFlowing": true
+  },
+  "explainedTransientErrors": {
+    "signaling401RaceCount": 0,
+    "note": "token 库文件 reload/心跳重写 TOCTOU 竞争导致的瞬时 401（smoke 已重试自愈），属 core/cloud 侧既有问题，详见 README「已发现的既有产品问题」"
+  },
+  "round": {
+    "ok": true,
+    "label": "input-connect",
+    "statusAtConsent": "已获 Host 授权，接收画面…",
+    "statusFinal": "首帧已渲染，投屏中…",
+    "hostFingerprint": "对端 rdcore-host 指纹: 4B 09 CD E8 FC 25 6F 96 C4 65 DA 1B D4 5E 69 C6 8F 7C D6 DD B4 D3 9B F9 C3 02 28 FA 72 6D 7C 51（请带外核对）",
+    "viewerFp": "AA 38 B7 1C 67 88 A7 09 E7 F6 CE FC E2 F7 56 C0 B6 C3 CE C1 D9 45 BC 3D 97 49 3C B9 66 F0 76 E9",
+    "sessionKeyFp": "d5bd6861",
+    "consented": true,
+    "framesAtFirst": 1,
+    "framesFinal": 11,
+    "lastFrame": {
+      "width": 3440,
+      "height": 1440,
+      "lum": 145.5,
+      "std": 107.6,
+      "diff": 1.49
+    },
+    "frameStats": {
+      "maxStd": 110.9,
+      "maxDiff": 13.65
+    },
+    "retried": false,
+    "attempts": 1
+  },
+  "console": [
+    "[log] 本机身份指纹: AA 38 B7 1C 67 88 A7 09 E7 F6 CE FC E2 F7 56 C0 B6 C3 CE C1 D9 45 BC 3D 97 49 3C B9 66 F0 76 E9",
+    "[log] PeerConnection: connecting",
+    "[log] PeerConnection: connected",
+    "[log] [rtc] media(0) open",
+    "[log] [rtc] control(1) open",
+    "[log] [rtc] audio(2) open",
+    "[log] 控制消息: consent {Consent: Object}",
+    "[log] consent scopes: [View, Input] → input allowed = true"
+  ],
+  "errors": []
+}

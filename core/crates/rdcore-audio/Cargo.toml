@@ -1,0 +1,27 @@
+# C 音频管线 · 捕获 / 播放边界 crate（镜像 rdcore-capture）。
+#
+# 默认零原生依赖：仅提供契约类型 + headless 的 Null/Synthetic 实现 + Raw PCM 直通编解码，
+# 全部可在 CI 直接编译测试。真实后端（cpal 采集/播放 + Opus 压缩）走 `real` feature，
+# 与视频的 `real`（scrap + enigo + openh264）平行，默认不启用以免引入原生 SDK 构建依赖。
+[package]
+name = "rdcore-audio"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-only"
+
+[dependencies]
+# 共享契约层：AudioFrame / AudioCodec 在此定义。
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+# 真实后端（cpal 采集/播放 + opus 压缩）：默认不编译，启用 `real` 时由 `src/real.rs` 提供实现。
+cpal = { version = "0.15", optional = true }
+opus = { version = "0.3", optional = true }
+
+[features]
+default = []
+# 启用真实音频后端（需要系统音频库 / libopus，沙箱 CI 不启用）。
+real = ["dep:cpal", "dep:opus"]
+
+[dev-dependencies]
+# 仅测试用：用真实的音频通道证明 Source→通道→Sink 无损往返。
+rdcore-media = { path = "../rdcore-media" }
+tokio = { version = "1", features = ["full"] }

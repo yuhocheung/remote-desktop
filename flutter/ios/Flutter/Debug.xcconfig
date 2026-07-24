@@ -1,0 +1,9 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+#include "Generated.xcconfig"
+// 强制把 rdcore-ffi 静态库整体链入 app，否则 DynamicLibrary.process() 在运行时
+// 查不到 C ABI 符号（链接器默认会 dead_strip 未被 Swift/ObjC 显式引用的导出符号）。
+// 注意：此 .a 须先由 tool/build_ffi.sh ios 生成，否则 flutter build ios 链接阶段报错。
+OTHER_LDFLAGS = $(inherited) -force_load "$(SRCROOT)/rdcore/librdcore_ffi.a"
+// rdcore-ffi 的符号只在运行时经 DynamicLibrary.process() 查，链接期无 Swift/ObjC 引用，
+// 必须关闭 dead code stripping，否则这些 C ABI 符号会被剥离，导致运行时报「原生库未加载」。
+DEAD_CODE_STRIPPING = NO

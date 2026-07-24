@@ -1,0 +1,51 @@
+{
+  "ok": true,
+  "mode": "realcapture",
+  "headed": true,
+  "assertions": {
+    "consent": true,
+    "firstFrame": true,
+    "streamContinues": true,
+    "notBlank": true,
+    "resolution": "3440x1440",
+    "resolutionMatchesScreen": true,
+    "maxStd": 103.7,
+    "maxDiff": 43.42
+  },
+  "explainedTransientErrors": {
+    "signaling401RaceCount": 0,
+    "note": "token 库文件 reload/心跳重写 TOCTOU 竞争导致的瞬时 401（smoke 已重试自愈），属 core/cloud 侧既有问题，详见 README「已发现的既有产品问题」"
+  },
+  "round": {
+    "ok": true,
+    "label": "round1",
+    "statusAtConsent": "已获 Host 授权，接收画面…",
+    "statusFinal": "首帧已渲染，投屏中…",
+    "hostFingerprint": "对端 rdcore-host 指纹: 4B 09 CD E8 FC 25 6F 96 C4 65 DA 1B D4 5E 69 C6 8F 7C D6 DD B4 D3 9B F9 C3 02 28 FA 72 6D 7C 51（请带外核对）",
+    "viewerFp": "66 28 B7 99 12 25 93 35 12 97 26 B3 07 C3 1D 52 01 8E 33 0B CD 15 E0 93 EF A8 6B 3B F9 4E D6 6E",
+    "sessionKeyFp": "2e237310",
+    "consented": true,
+    "framesAtFirst": 1,
+    "framesFinal": 11,
+    "lastFrame": {
+      "width": 3440,
+      "height": 1440,
+      "lum": 193.4,
+      "std": 92.4,
+      "diff": 0.07
+    },
+    "frameStats": {
+      "maxStd": 103.7,
+      "maxDiff": 43.42
+    },
+    "retried": false,
+    "attempts": 1
+  },
+  "console": [
+    "[log] 本机身份指纹: 66 28 B7 99 12 25 93 35 12 97 26 B3 07 C3 1D 52 01 8E 33 0B CD 15 E0 93 EF A8 6B 3B F9 4E D6 6E",
+    "[log] PeerConnection: connecting",
+    "[log] PeerConnection: connected",
+    "[log] 控制消息: consent {Consent: Object}"
+  ],
+  "errors": []
+}

@@ -1,0 +1,52 @@
+# M3 smoke 探针 Host（剪贴板 / 文件传输 / 音频的协议对端）。
+#
+# 为什么存在：rdcore-desktop agent 只接了媒体泵 + 输入注入，没有 clipboard/file/audio
+# 业务循环（协议对端缺位）；rdcore-app 的 `Connection` 公开 API 只暴露
+# `AppMessage`（5 变体，无 FileTransfer）与媒体/音频帧收发，**没有**裸控制通道出入口，
+# 而仓库内唯一的文件传输线格式（rdcore-ffi Track B：`postcard(Message::FileTransfer)`
+# → AEAD → `Message::Encrypted`）要求对端能自行加解密并收发裸 `Message`。
+# 因此本探针直接建在公开库 API 之上（rdcore-rtc / rdcore-session / rdcore-signaling /
+# rdcore-media / rdcore-crypto），复刻 `rdcore-app::Connection::establish` 的 Host 分支
+# 编排（PeerHello/TOFU → 验签 Offer → 签名 Answer → ICE 中继 → X25519 会话密钥 →
+# 下发 Consent），此后按各场景协议收发。**不改 core/shared/cloud 任何文件。**
+#
+# 独立 workspace（`[workspace]` 空表）：不加入根 workspace（那是 core 的文件）；
+# 构建时设 CARGO_TARGET_DIR 指向仓库根 target/ 以复用依赖缓存。
+[package]
+name = "probe-host"
+version = "0.1.0"
+edition = "2021"
+description = "M3 smoke probe Host: clipboard / file-transfer / audio protocol peer built on public rdcore library APIs"
+license = "AGPL-3.0-only"
+
+[dependencies]
+# 契约层：Message / FileTransferEvent / ClipboardEvent / AudioFrame / Capabilities 等真实线类型。
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+# AEAD / X25519 / Ed25519 provider / SecretKey / SessionKey。
+rdcore-crypto = { path = "../../../shared/rdcore-crypto" }
+# 持久化身份（TOFU 对端表 + 口令加密私钥），与 rdcore-desktop 同一套落盘格式。
+rdcore-identity = { path = "../../../shared/rdcore-identity" }
+# 签名/验签/会话密钥派生（sign_answer / verify_offer / sign_ephemeral_key / establish_session_key）。
+rdcore-session = { path = "../../../core/crates/rdcore-session" }
+# WebSocket 信令客户端（仅 SDP/ICE/PeerHello）。
+rdcore-signaling = { path = "../../../core/crates/rdcore-signaling" }
+# 真实 WebRTC PeerConnection（默认 real feature：三条 negotiated 数据通道）。
+rdcore-rtc = { path = "../../../core/crates/rdcore-rtc" }
+# SocketMediaChannel / SocketDataChannel / SocketAudioChannel 与帧化线格式。
+rdcore-media = { path = "../../../core/crates/rdcore-media" }
+# ConsentDecision / ConsentScope（授权决定线类型）。
+rdcore-consent = { path = "../../../core/crates/rdcore-consent" }
+# SyntheticAudioSource（440Hz 正弦合成源，headless 可跑）。
+rdcore-audio = { path = "../../../core/crates/rdcore-audio" }
+
+tokio = { version = "1", features = ["full"] }
+anyhow = "1"
+postcard = { version = "1", features = ["use-std"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+hex = "0.4"
+getrandom = "0.2"
+
+# 独立 workspace：路径依赖仍然解析到 core/shared 的 crate 源码，但本 crate 的
+# Cargo.lock / feature 统一独立计算，不触碰根 workspace 的任何文件。
+[workspace]

@@ -1,0 +1,11 @@
+{
+  "description": "M0 互认证据：Web 构造的签名 Offer / SessionKeyExchange 被 Host 侧 rdcore-session 验签接受；两端 ECDH 派生相同会话密钥",
+  "host_verify_offer": {
+    "result": "ok",
+    "verified_device_id_hex": "a0a1a2a3a4a5a6a7a8a9aaabacadaeaf",
+    "verified_fingerprint": "56 47 5A A7 54 63 47 4C 02 85 DF 5D BF 2B CA B7 3D A6 51 35 88 39 E9 B7 74 81 B2 EA B1 07 70 8C"
+  },
+  "offer_bytes_hex": "00c0c1c2c3c4c5c6c7c8c9cacbcccdcecfa0a1a2a3a4a5a6a7a8a9aaabacadaeaf19763d30207264636f72652d7765622074657374206f66666572020005800fb8081e0101010100015873a2ee1d87c628a3fd4a12745e4f3f2abb81a7f45f89ed2d9057d379e89b177198342a3de821302d58e0bd1e100ccd374cbe531ac79e634badcbab73fd100d",
+  "session_key_hex": "8d9df2705a42437f6d3e9842328df8338fbb9ead63b34bada646e45ef4a06811",
+  "viewer_session_key_exchange_hex": "06c0c1c2c3c4c5c6c7c8c9cacbcccdcecfa0a1a2a3a4a5a6a7a8a9aaabacadaeaf79a631eede1bf9c98f12032cdeadd0e7a079398fc786b88cc846ec89af85a51a01d67bbbc8b4c3f8caa9c931e73f073a00534d7a2e967b3d0444177e0abc0a16fe121ee0924e603c68f2e802830fad5e9b0870c195482004b99fddebb07550670f"
+}

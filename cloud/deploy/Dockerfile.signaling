@@ -1,0 +1,21 @@
+# signaling-svc 精简运行时镜像。
+# 构建上下文为仓库根（compose 里 context: ../../）。
+
+# ── 构建阶段 ──
+FROM rust:bookworm AS build
+WORKDIR /src
+# 仅拷贝依赖清单以利用缓存（单 workspace 需全部 member 的 Cargo.toml）。
+COPY Cargo.toml Cargo.lock ./
+COPY cloud ./cloud
+COPY core ./core
+COPY shared ./shared
+RUN cargo build --release -p signaling-svc
+
+# ── 运行阶段 ──
+FROM debian:bookworm-slim
+RUN useradd -m -u 10001 rdcore
+COPY --from=build /src/target/release/signaling-svc /usr/local/bin/signaling-svc
+USER rdcore
+ENV SIGNALING_ADDR=0.0.0.0:8080
+EXPOSE 8080
+ENTRYPOINT ["signaling-svc"]

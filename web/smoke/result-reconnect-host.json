@@ -1,0 +1,9 @@
+{
+  "hostProcessAliveAtEnd": true,
+  "pairingUnchanged": true,
+  "establishedCount": 3,
+  "disconnectWaitCount": 2,
+  "tokenFileFreshAfterReconnect": true,
+  "tokenFileAgeSeconds": 27,
+  "note": "配对 token 不焚毁：同一 session+token 可重复入房（cloud/crates/signaling-svc/src/lib.rs §B2，reload_from_file 以文件为事实 reconcile）；Host 进程全程未重启、配对码未变。"
+}

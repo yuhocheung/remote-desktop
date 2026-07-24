@@ -1,0 +1,38 @@
+[package]
+name = "rdcore-encode"
+version = "0.1.0"
+edition = "2021"
+description = "视频帧编码器（Track A 媒体面）：Raw RGBA 直通 + H.264 压缩编码（openh264）"
+# 许可修正（Task #74）：闭源分发与 AGPL 冲突，改为双宽松许可。
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+openh264 = "0.4"
+
+# 硬件编码（FFmpeg NVENC/QSV/AMF 统一封装）仅在开启 `hwcodec` 且 Windows 构建时拉取。
+# 默认（无 feature / 非 Windows）构建保持纯软编（openh264），不引入任何 Windows COM / ffmpeg 依赖。
+[target.'cfg(windows)'.dependencies]
+# capability 探测（LoadLibrary 探厂商 DLL + MFTEnum2 枚举硬件 MFT）用到的 Windows COM 子集。
+windows = { version = "0.54", optional = true, features = [
+    "Win32_Foundation",
+    "Win32_System_Com",
+    "Win32_System_LibraryLoader",
+    "Win32_Media_MediaFoundation",
+] }
+# FFmpeg 硬件编码后端（NVENC/QSV/AMF）。采用「低驱动地板」构建（2026-07-24 决策，
+# 详见 docs/ffmpeg_hw_lowfloor.md）：ffmpeg-next 7.x → ffmpeg-sys-next 7.x → ffmpeg 7.1.2
+# + nv-codec-headers 12.2.72.0（NVENC API 12.2 → 最低驱动 551.76；NVENC 向后兼容，
+# 新驱动照常工作）。构建脚本：scripts/build_ffmpeg_lowfloor.ps1（vcpkg 钉死基线），
+# 产物经 FFMPEG_DIR 暴露给构建脚本（无需 pkg-config/vcpkg 集成）。
+ffmpeg-next = { version = "7", optional = true }
+
+[features]
+# 保留空 feature 以兼容历史 `--features h264` 写法；真实 H.264 现已默认编译。
+h264 = []
+# 硬件编码子系统开关：开启后 `new_encoder(H264)` 会优先探测并使用 GPU 硬件编码器（FFmpeg），
+# 失败时自动回退 openh264 软编；仅 Windows 平台生效。
+hwcodec = ["dep:windows", "dep:ffmpeg-next"]
+
+[dev-dependencies]
+rdcore-decode = { path = "../rdcore-decode" }

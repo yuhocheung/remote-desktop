@@ -1,0 +1,21 @@
+[package]
+name = "rdcore-viewer-cli"
+version = "0.1.0"
+edition = "2021"
+description = "无 GUI 的 headless Viewer harness：用真实信令服务器 + 真实 Host + 真实 WebRTC（localhost 回环）把整条握手（Ed25519 验签 → ICE → E2E 会话密钥 → 同意）全自动跑通，并验证加密媒体/控制往返。用于 CI / 沙箱无显示器环境下证明 Host↔Viewer 链路。"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+rdcore-app = { path = "../rdcore-app" }
+rdcore-crypto = { path = "../../../shared/rdcore-crypto" }
+rdcore-identity = { path = "../../../shared/rdcore-identity" }
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+rdcore-consent = { path = "../rdcore-consent" }
+rdcore-rtc = { path = "../rdcore-rtc" }
+signaling-svc = { path = "../../../cloud/crates/signaling-svc" }
+# rustls 0.23 不会自动选默认 crypto provider；webrtc-rs 的 DTLS 需要它，
+# 故在此显式启用 ring 并在 main 顶部 install_default（与生产 rdcore-rtc 一致）。
+rustls = { version = "0.23", features = ["ring"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time", "net"] }
+anyhow = "1"
+hex = "0.4"

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 680 440" width="680" height="440" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Corrected topology with trust zones</title>
+<desc>Trust zones, explicit TURN fallback, and end-to-end encryption boundary.</desc>
+<style>
+text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;}
+.t{font-size:14px;fill:#2C2C2A;}
+.ts{font-size:12px;fill:#5F5E5A;}
+.th{font-size:14px;font-weight:500;fill:#2C2C2A;}
+</style>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<rect x="0" y="0" width="680" height="440" fill="#FFFFFF"/>
+<rect x="30" y="70" width="150" height="250" rx="12" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+<text class="th" x="105" y="92" text-anchor="middle">Viewer</text>
+<text class="ts" x="105" y="110" text-anchor="middle">（可信端点 · 多平台）</text>
+<rect x="45" y="126" width="120" height="46" rx="8" fill="#FFFFFF" stroke="#378ADD" stroke-width="0.5"/>
+<text class="t" x="105" y="145" text-anchor="middle">App Viewer</text>
+<text class="ts" x="105" y="162" text-anchor="middle">Flutter · 原生纹理</text>
+<rect x="45" y="188" width="120" height="46" rx="8" fill="#FFFFFF" stroke="#378ADD" stroke-width="0.5"/>
+<text class="t" x="105" y="207" text-anchor="middle">Web Viewer</text>
+<text class="ts" x="105" y="224" text-anchor="middle">WASM·WebCodecs</text>
+<rect x="45" y="250" width="120" height="46" rx="8" fill="#FFFFFF" stroke="#378ADD" stroke-width="0.5"/>
+<text class="t" x="105" y="269" text-anchor="middle">Input capture</text>
+<text class="ts" x="105" y="286" text-anchor="middle">键鼠 → Host</text>
+<rect x="500" y="70" width="150" height="250" rx="12" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+<text class="th" x="575" y="92" text-anchor="middle">Host</text>
+<text class="ts" x="575" y="110" text-anchor="middle">（可信端点）</text>
+<rect x="515" y="126" width="120" height="46" rx="8" fill="#FFFFFF" stroke="#1D9E75" stroke-width="0.5"/>
+<text class="t" x="575" y="149" text-anchor="middle">Screen capture</text>
+<rect x="515" y="188" width="120" height="46" rx="8" fill="#FFFFFF" stroke="#1D9E75" stroke-width="0.5"/>
+<text class="t" x="575" y="205" text-anchor="middle">Input inject</text>
+<text class="ts" x="575" y="222" text-anchor="middle">特权注入</text>
+<rect x="250" y="70" width="180" height="250" rx="12" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<text class="th" x="340" y="92" text-anchor="middle">Cloud（半可信）</text>
+<rect x="265" y="108" width="150" height="46" rx="8" fill="#FFFFFF" stroke="#888780" stroke-width="0.5"/>
+<text class="t" x="340" y="131" text-anchor="middle">Signaling (WS)</text>
+<rect x="265" y="196" width="150" height="46" rx="8" fill="#FFFFFF" stroke="#888780" stroke-width="0.5" stroke-dasharray="4 3"/>
+<text class="t" x="340" y="219" text-anchor="middle">TURN relay</text>
+<text class="ts" x="340" y="262" text-anchor="middle">仅兜底</text>
+<text class="ts" x="340" y="292" text-anchor="middle">信令通道非 E2E · 配对指纹带外校验（TOFU，已实现）</text>
+<text class="ts" x="340" y="312" text-anchor="middle">Web 静态托管 · Caddy wss</text>
+<path d="M165,149 L262,131" fill="none" stroke="#378ADD" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<path d="M500,149 L418,131" fill="none" stroke="#1D9E75" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<path d="M595,335 L108,335" fill="none" stroke="#D85A30" stroke-width="1.8" marker-end="url(#arrow)"/>
+<text class="ts" x="340" y="328" text-anchor="middle">端到端加密（DTLS-SRTP，DataChannel 负载再叠加 AEAD）</text>
+<path d="M500,219 L418,219" fill="none" stroke="#D85A30" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<path d="M265,219 L182,219" fill="none" stroke="#D85A30" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+<text class="ts" x="340" y="384" text-anchor="middle">TURN 兜底：中继只见密文 + 元数据</text>
+<line x1="230" y1="412" x2="265" y2="412" stroke="#378ADD" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text class="ts" x="272" y="416" text-anchor="start">信令（WS）</text>
+<line x1="360" y1="412" x2="395" y2="412" stroke="#D85A30" stroke-width="1.6"/>
+<text class="ts" x="402" y="416" text-anchor="start">P2P（E2E）</text>
+<line x1="490" y1="412" x2="525" y2="412" stroke="#D85A30" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text class="ts" x="532" y="416" text-anchor="start">TURN（中继）</text>
+</svg>

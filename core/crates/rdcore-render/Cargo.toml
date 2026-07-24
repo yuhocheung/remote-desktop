@@ -1,0 +1,9 @@
+[package]
+name = "rdcore-render"
+version = "0.1.0"
+edition = "2021"
+description = "解码帧渲染落点（Track A 媒体面）：CPU 渲染契约 + RenderedFrame"
+license = "AGPL-3.0-only"
+
+[dependencies]
+rdcore-decode = { path = "../rdcore-decode" }

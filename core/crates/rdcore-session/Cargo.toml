@@ -1,0 +1,13 @@
+[package]
+name = "rdcore-session"
+version = "0.1.0"
+edition = "2021"
+description = "Session state machine and orchestration."
+# 许可修正（Task #74）：闭源分发与 AGPL 冲突，改为双宽松许可。
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+# P4 控制面：握手签名/验签只依赖契约层 + 密码学 + 身份。
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+rdcore-crypto = { path = "../../../shared/rdcore-crypto" }
+rdcore-identity = { path = "../../../shared/rdcore-identity" }

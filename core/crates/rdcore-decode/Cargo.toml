@@ -1,0 +1,18 @@
+[package]
+name = "rdcore-decode"
+version = "0.1.0"
+edition = "2021"
+description = "视频帧解码器（Track A 媒体面）：Raw RGBA 还原 + H.264 压缩解码（openh264）"
+# 许可修正（Task #74）：闭源分发与 AGPL 冲突，改为双宽松许可。
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+openh264 = "0.4"
+
+[features]
+# 保留空 feature 以兼容历史 `--features h264` 写法；真实 H.264 现已默认编译。
+h264 = []
+
+[dev-dependencies]
+rdcore-encode = { path = "../rdcore-encode" }

@@ -1,0 +1,77 @@
+# Rust
+/target
+**/target
+# Cargo.lock is COMMITTED: this repo ships binaries (desktop + cloud).
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter_dl_parts/
+build/
+
+# Flutter SDK 与构建产物
+/flutter_sdk/
+/.flsdk_tmp/
+.fvm/flutter_sdk
+flutter/rdcore_ffi.dll
+# 各平台 stage 的 rdcore-ffi 原生库（build_ffi.sh 产物）
+flutter/**/rdcore/*.dll
+flutter/**/rdcore/*.dll.lib
+flutter/**/rdcore/*.so
+flutter/**/rdcore/*.dylib
+flutter/**/rdcore/*.a
+
+# Env / secrets (never commit)
+.env
+*.pem
+*.key
+*.p12
+signing/
+
+# Editor
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# WorkBuddy
+.workbuddy/
+
+# Host 运行期写出的共享 token 库（开放模式信令服务不读；测试/本地运行产物）
+signaling_token_db.txt
+
+# NSIS 安装包构建产物
+scripts/installer/dist/
+scripts/installer/*.exe
+scripts/installer/RdCore-Host-Setup.exe
+# 本地 MSVC 构建辅助（机器相关，非 CI 用）
+scripts/_run_installer_build.sh
+scripts/_viewer_build.sh
+_msvc_build.bat
+_build_host_release.bat
+_test_vcvars.bat
+
+# FFmpeg / NVENC 移植调研的本地工作笔记（非工程产物）
+ffmpeg_port_712.json
+ffnvcodec_port.json
+vcpkg_ffmpeg_commits.json
+
+# GPU 驱动写入 cwd 的运行期日志目录
+NVIDIA Corporation/
+
+# docs 
+docs/*
+!docs/架构图/
+!docs/架构图/**
+# README 引用的工程文档须入库（死链修复）
+!docs/roadmap.md
+!docs/media_pipeline.md
+!docs/ffmpeg_hw_lowfloor.md
+!docs/plan_iphone_windows_public.md
+# 双轨协作基线（冻结契约 / append-only 规则 / §9 通道约定）须版本化
+!docs/双轨开发契约.md

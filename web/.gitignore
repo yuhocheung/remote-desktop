@@ -1,0 +1,8 @@
+# 构建产物
+rdcore-web/pkg/
+app/node_modules/
+app/dist/
+
+# smoke 运行期产物
+smoke/run/
+smoke/.run-debug/

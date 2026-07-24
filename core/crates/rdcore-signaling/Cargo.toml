@@ -1,0 +1,28 @@
+# rdcore-signaling — WebSocket 信令客户端（连接 cloud 控制平面的 Signaling Service）。
+#
+# 把 P0 的 `Message` 用 postcard 编码为二进制帧经 WebSocket 收发；接收侧用
+# decode_limited（F3 上限）还原。客户端对通道中立：只负责"收发 Message"，
+# 具体是 Offer 还是 InputEvent 由上层决定。按架构 §1，信令 WebSocket 只承载 SDP/ICE，
+# InputEvent/Clipboard/Heartbeat 在 P3 改走 WebRTC DataChannel。
+
+[package]
+name = "rdcore-signaling"
+version = "0.1.0"
+edition = "2021"
+description = "WebSocket signaling client to the cloud control plane."
+license = "AGPL-3.0-only"
+
+[dependencies]
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.24"
+futures-util = "0.3"
+
+[dev-dependencies]
+rdcore-loopback = { path = "../rdcore-loopback" }
+rdcore-media = { path = "../rdcore-media" }
+rdcore-crypto = { path = "../../../shared/rdcore-crypto" }
+rdcore-identity = { path = "../../../shared/rdcore-identity" }
+rdcore-session = { path = "../rdcore-session" }
+rdcore-consent = { path = "../rdcore-consent" }
+signaling-svc = { path = "../../../cloud/crates/signaling-svc" }

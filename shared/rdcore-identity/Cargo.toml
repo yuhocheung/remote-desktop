@@ -1,0 +1,18 @@
+# P0 契约层 · 身份类型 crate：定义每设备身份类型与 IdentityStore 接口（无实现）。
+[package]
+name = "rdcore-identity"
+version = "0.1.0"
+edition = "2021"
+description = "Per-device identity types and the IdentityStore interface."
+license = "AGPL-3.0-only"
+
+[dependencies]
+rdcore-crypto = { path = "../rdcore-crypto" }
+serde = { version = "1", features = ["derive"] }
+# 生成本地设备的随机 DeviceId（P4 落地，配合 CryptoProvider 生成密钥对）。
+getrandom = "0.2"
+# B1 持久化：身份 JSON 落盘 + 私钥加密（KDF + XChaCha AEAD）。
+serde_json = "1"
+chacha20poly1305 = "0.10"
+sha2 = "0.10"
+zeroize = "1"

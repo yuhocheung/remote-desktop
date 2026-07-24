@@ -1,0 +1,84 @@
+[package]
+name = "rdcore-banner"
+version = "0.1.0"
+edition = "2021"
+description = "OS-level unspoofable connection banner (separate process, topmost window)."
+license = "AGPL-3.0-only"
+build = "build.rs"
+
+[lib]
+name = "rdcore_banner"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rdcore-banner"
+path = "src/main.rs"
+
+[features]
+default = []
+# 生产用：真实 Windows 置顶窗口渲染器（需要 Windows 构建环境 + 显示器）。
+# 默认关闭，使沙箱/CI 可用纯 UDP+控制台实现完成构建与测试。
+windows-native = ["dep:windows-sys", "dep:qrcode"]
+# macOS 原生：AppKit 置顶横幅 + 配对二维码弹窗（替代控制台回退）。
+macos-native = ["dep:qrcode", "dep:objc2", "dep:objc2-app-kit", "dep:objc2-foundation"]
+# 一键映射：从 rdcore_consent::SecurityIndicator 生成 BannerState（单一事实来源）。
+consent = ["dep:rdcore-consent", "dep:rdcore-crypto"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# 托盘二维码弹窗的 QR 矩阵计算（仅 unicode/原生像素，无需图像编解码）。
+qrcode = { version = "0.14", default-features = false, optional = true }
+
+rdcore-consent = { path = "../rdcore-consent", optional = true }
+rdcore-crypto = { path = "../../../shared/rdcore-crypto", optional = true }
+
+# 仅 Windows 平台、且仅在开启 windows-native 时拉取。默认构建不引入。
+[target.'cfg(windows)'.dependencies.windows-sys]
+version = "0.52"
+optional = true
+features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Shell",
+    "Win32_Graphics_Gdi",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Memory",
+    "Win32_System_DataExchange",
+    "Win32_System_Ole",
+]
+
+# macOS 原生 GUI（AppKit）：仅 macOS + macos-native 拉取。
+# objc2-app-kit 的绑定按类型拆 feature，需逐个开启。
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = { version = "0.5", optional = true }
+objc2-app-kit = { version = "0.2", optional = true, features = [
+    "NSApplication",
+    "NSWindow",
+    "NSView",
+    "NSColor",
+    "NSFont",
+    "NSBezierPath",
+    "NSPasteboard",
+    "NSScreen",
+    "NSButton",
+    "NSButtonCell",
+    "NSStringDrawing",
+    "NSGraphics",
+    "NSBitmapImageRep",
+    "NSImage",
+    "NSImageView",
+    "NSTextField",
+    "NSTextFieldCell",
+    "NSRunningApplication",
+    "NSResponder",
+    "NSImageRep",
+    "NSControl",
+] }
+objc2-foundation = { version = "0.2", optional = true, features = [
+    "NSString",
+    "NSDictionary",
+    "NSGeometry",
+    "NSNotification",
+    "NSObject",
+] }

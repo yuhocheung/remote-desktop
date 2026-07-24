@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>zh_CN</string>
+    <key>CFBundleExecutable</key>
+    <string>launcher</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.rdcore.host-agent</string>
+    <key>CFBundleName</key>
+    <string>RdCore Host</string>
+    <key>CFBundleDisplayName</key>
+    <string>RdCore Host</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>11.0</string>
+    <!-- 不设 LSUIElement：远程桌面 Host 是后台服务，但该属性会让 LaunchServices
+         对「ad-hoc 签名 + 未公证」的 bundle 直接冻结并报「没有响应」。
+         去掉后 ad-hoc 签名即可正常双击启动；Dock 图标出现是可接受的折中。 -->
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSScreenCaptureUsageDescription</key>
+    <string>RdCore 受控端需要录制屏幕，以便控制端远程查看本机画面。</string>
+</dict>
+</plist>

@@ -1,0 +1,109 @@
+{
+  "ok": true,
+  "mode": "autoreconnect",
+  "headed": false,
+  "assertions": {
+    "consent": true,
+    "firstFrame": true,
+    "loadIdUnchanged": true,
+    "drops": [
+      {
+        "round": 1,
+        "delayMs": 1000,
+        "statusAtBackoff": "已断开（信令已断开），1s 后重连…"
+      },
+      {
+        "round": 2,
+        "delayMs": 2000,
+        "statusAtBackoff": "已断开（信令已断开），2s 后重连…"
+      }
+    ],
+    "backoffDelaysMs": [
+      1000,
+      2000
+    ],
+    "backoffExponential": true,
+    "attempts": 4,
+    "dropCount": 4,
+    "keyFps": [
+      "ddfe8025",
+      "a4e8cd10"
+    ],
+    "keyRotatedEachRound": true,
+    "framesResumed": true,
+    "finalState": "connected",
+    "statusFinal": "首帧已渲染，投屏中…",
+    "noManualReconnect": true
+  },
+  "explainedTransientErrors": {
+    "signaling401RaceCount": 0,
+    "note": "token 库文件 reload/心跳重写 TOCTOU 竞争导致的瞬时 401（smoke 已重试自愈），属 core/cloud 侧既有问题，详见 README「已发现的既有产品问题」"
+  },
+  "round": {
+    "ok": true,
+    "label": "round1-initial",
+    "statusAtConsent": "已获 Host 授权，接收画面…",
+    "statusFinal": "首帧已渲染，投屏中…",
+    "hostFingerprint": "对端 rdcore-host 指纹: 4B 09 CD E8 FC 25 6F 96 C4 65 DA 1B D4 5E 69 C6 8F 7C D6 DD B4 D3 9B F9 C3 02 28 FA 72 6D 7C 51（请带外核对）",
+    "viewerFp": "9D 4E 58 C8 EE 40 D9 30 85 62 24 7E 43 8D EB 75 19 70 C0 43 54 84 A4 52 87 D8 AF 06 F9 47 13 E3",
+    "sessionKeyFp": "ddfe8025",
+    "consented": true,
+    "framesAtFirst": 1,
+    "framesFinal": 13,
+    "lastFrame": {
+      "width": 1280,
+      "height": 720,
+      "lum": 31,
+      "std": 0,
+      "diff": 0
+    },
+    "frameStats": {
+      "maxStd": 0,
+      "maxDiff": 0
+    },
+    "retried": false,
+    "attempts": 1
+  },
+  "drops": [
+    {
+      "round": 1,
+      "delayMs": 1000,
+      "statusAtBackoff": "已断开（信令已断开），1s 后重连…"
+    },
+    {
+      "round": 2,
+      "delayMs": 2000,
+      "statusAtBackoff": "已断开（信令已断开），2s 后重连…"
+    }
+  ],
+  "console": [
+    "[log] 本机身份指纹: 9D 4E 58 C8 EE 40 D9 30 85 62 24 7E 43 8D EB 75 19 70 C0 43 54 84 A4 52 87 D8 AF 06 F9 47 13 E3",
+    "[log] PeerConnection: connecting",
+    "[log] PeerConnection: connected",
+    "[log] [rtc] media(0) open",
+    "[log] [rtc] control(1) open",
+    "[log] [rtc] audio(2) open",
+    "[log] 控制消息: consent {Consent: Object}",
+    "[log] consent scopes: [View, Input] → input allowed = true",
+    "[log] [rtc] media(0) closed",
+    "[log] [rtc] control(1) closed",
+    "[log] [rtc] audio(2) closed",
+    "[log] [rtc] media(0) closed",
+    "[log] [rtc] control(1) closed",
+    "[log] [rtc] audio(2) closed",
+    "[log] [rtc] media(0) closed",
+    "[log] [rtc] control(1) closed",
+    "[log] [rtc] audio(2) closed",
+    "[log] [rtc] media(0) closed",
+    "[log] [rtc] control(1) closed",
+    "[log] [rtc] audio(2) closed",
+    "[log] PeerConnection: connecting",
+    "[log] PeerConnection: connected",
+    "[log] [rtc] media(0) open",
+    "[log] [rtc] control(1) open",
+    "[log] [rtc] audio(2) open",
+    "[log] 控制消息: consent {Consent: Object}",
+    "[log] consent scopes: [View, Input] → input allowed = true"
+  ],
+  "errors": []
+}

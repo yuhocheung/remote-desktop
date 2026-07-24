@@ -1,0 +1,19 @@
+[package]
+name = "rdcore-media"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-only"
+
+[dependencies]
+# 共享契约层：MediaFrame / Message 都在这里，媒体通道只引用契约，不反向依赖 loopback 假实现。
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+# 异步通道与 trait（full 含 rt + sync + macros）。
+tokio = { version = "1", features = ["full"] }
+# framing 泛型边界需要 serde 的 Serialize / DeserializeOwned trait（类型已由 rdcore-proto 派生）。
+serde = "1"
+# 线格式用 postcard 编解码（与 rdcore-proto 同一套紧凑二进制格式，保证互操作）。
+postcard = { version = "1", features = ["use-std"] }
+
+[dev-dependencies]
+# 仅测试用：用真实的 RawEncoder/RawDecoder 证明媒体通道无损承载编码帧。
+rdcore-loopback = { path = "../rdcore-loopback" }

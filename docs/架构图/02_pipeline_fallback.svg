@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 680 360" width="680" height="360" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Corrected latency pipeline</title>
+<desc>Encode fallback (HW/SW), native video view, consent gate on input, E2E network.</desc>
+<style>
+text{font-family:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif;}
+.t{font-size:14px;fill:#2C2C2A;}
+.ts{font-size:12px;fill:#5F5E5A;}
+.th{font-size:14px;font-weight:500;fill:#2C2C2A;}
+</style>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+<path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<rect x="0" y="0" width="680" height="360" fill="#FFFFFF"/>
+<rect x="30" y="60" width="140" height="50" rx="10" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+<text class="t" x="100" y="85" text-anchor="middle">Capture</text>
+<text class="ts" x="100" y="101" text-anchor="middle">DXGI/SCK/PW</text>
+<rect x="30" y="122" width="140" height="56" rx="10" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+<text class="t" x="100" y="144" text-anchor="middle">Encode</text>
+<text class="ts" x="100" y="162" text-anchor="middle">HW (ffmpeg) / openh264 兜底</text>
+<rect x="270" y="72" width="140" height="84" rx="10" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+<text class="th" x="340" y="98" text-anchor="middle">Network</text>
+<text class="ts" x="340" y="116" text-anchor="middle">P2P 优先，否则 TURN</text>
+<text class="ts" x="340" y="134" text-anchor="middle">端到端加密</text>
+<rect x="510" y="60" width="140" height="50" rx="10" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+<text class="t" x="580" y="85" text-anchor="middle">Decode</text>
+<text class="ts" x="580" y="101" text-anchor="middle">GPU / WebCodecs</text>
+<rect x="510" y="122" width="140" height="56" rx="10" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+<text class="t" x="580" y="144" text-anchor="middle">Video view</text>
+<text class="ts" x="580" y="162" text-anchor="middle">原生纹理零拷贝（不进 Dart 堆）</text>
+<text class="ts" x="672" y="200" text-anchor="end">浏览器：WASM→WebCodecs→Canvas</text>
+<path d="M100,110 L100,122" fill="none" stroke="#1D9E75" stroke-width="1.4" marker-end="url(#arrow)"/>
+<path d="M170,150 L268,110" fill="none" stroke="#1D9E75" stroke-width="1.4" marker-end="url(#arrow)"/>
+<path d="M410,110 L508,85" fill="none" stroke="#378ADD" stroke-width="1.4" marker-end="url(#arrow)"/>
+<path d="M580,110 L580,122" fill="none" stroke="#378ADD" stroke-width="1.4" marker-end="url(#arrow)"/>
+<text class="ts" x="230" y="142" text-anchor="middle">encode 5-15ms</text>
+<text class="ts" x="340" y="172" text-anchor="middle">RTT &lt;30ms P2P</text>
+<rect x="510" y="250" width="140" height="46" rx="10" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+<text class="t" x="580" y="277" text-anchor="middle">Input capture</text>
+<polygon points="340,248 380,268 340,288 300,268" fill="#FFFFFF" stroke="#D85A30" stroke-width="0.8"/>
+<text class="ts" x="340" y="272" text-anchor="middle">consent</text>
+<rect x="30" y="250" width="140" height="46" rx="10" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+<text class="t" x="100" y="277" text-anchor="middle">Input inject</text>
+<text class="ts" x="100" y="293" text-anchor="middle">特权注入</text>
+<path d="M648,273 L384,268" fill="none" stroke="#378ADD" stroke-width="1.4" marker-end="url(#arrow)"/>
+<path d="M296,268 L172,273" fill="none" stroke="#1D9E75" stroke-width="1.4" marker-end="url(#arrow)"/>
+<text class="ts" x="340" y="320" text-anchor="middle">加密传输 · Host 侧 consent 门控 + 防伪横幅（均已实现）</text>
+</svg>

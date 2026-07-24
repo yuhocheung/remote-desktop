@@ -1,0 +1,48 @@
+[advisories]
+version = 2
+
+[bans]
+multiple-versions = "warn"
+wildcards = "allow"
+
+[licenses]
+version = 2
+allow = [
+  "MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause",
+  "ISC", "Unicode-DFS-2016", "Unicode-3.0", "Zlib",
+]
+# 本仓自有 crate 的 AGPL-3.0-only 豁免（共 21 个，含已补标的 rdcore-loopback / rdcore-media）。
+# 注意：exceptions 按 crate 名精确匹配，只豁免本仓自有 crate；
+# 任何第三方 AGPL 依赖进入依赖图仍会 fail —— 这正是 roadmap「许可红旗」的 CI 门禁。
+# 某 crate 重新许可后，请从本表移除对应行（roadmap §4 风险 #7：动打包前必须解决）。
+exceptions = [
+  # 第三方个案：FFmpeg 硬件编解码绑定（hwcodec feature），WTFPL 为最大化宽松许可、无替代绑定库。
+  { allow = ["WTFPL"], name = "ffmpeg-next" },
+  { allow = ["WTFPL"], name = "ffmpeg-sys-next" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-crypto" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-identity" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-proto" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-audio" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-banner" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-capture" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-consent" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-desktop" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-ffi" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-loopback" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-media" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-render" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-rtc" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-signaling" },
+  { allow = ["AGPL-3.0-only"], name = "audit" },
+  { allow = ["AGPL-3.0-only"], name = "auth" },
+  { allow = ["AGPL-3.0-only"], name = "gateway" },
+  { allow = ["AGPL-3.0-only"], name = "permission" },
+  { allow = ["AGPL-3.0-only"], name = "registry" },
+  { allow = ["AGPL-3.0-only"], name = "signaling-svc" },
+  { allow = ["AGPL-3.0-only"], name = "rdcore-web" },
+]
+
+[sources]
+unknown-registry = "warn"
+unknown-git = "warn"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

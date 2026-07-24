@@ -1,0 +1,36 @@
+[package]
+name = "rdcore-rtc"
+version = "0.1.0"
+edition = "2021"
+description = "Real WebRTC PeerConnection backend (P7): media + control DataChannels as ByteTransport."
+license = "AGPL-3.0-only"
+
+[dependencies]
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+rdcore-media = { path = "../../../core/crates/rdcore-media" }
+bytes = "1"
+tokio = { version = "1", features = ["sync", "time"] }
+# 真实 WebRTC 后端（webrtc-rs）。默认开启（`real` feature，默认启用）；
+# 用 `--no-default-features` 可跳过（此时仅保留占位符号，不引入 webrtc 依赖）。
+webrtc = { version = "0.12", optional = true }
+# 视频 RTP 轨道（gap J）：整帧字节的分片打包/抗丢包重组直接使用与 webrtc-rs 同版本的
+# `rtp` crate 的 `Packet`/`Header` 类型，保证 RTP 语义一致。
+rtp = { version = "0.12", optional = true }
+# 显式锁定 rustls 的进程级 CryptoProvider 为 ring：workspace 里 gateway 拉入 aws-lc-rs，
+# 与 webrtc 的 ring 并存时 rustls 0.23 无法自动判定，DTLS 建连即 panic。在 `with_config`
+# 入口 `install_default(ring)` 一劳永逸（对全部下游二进制/FFI 生效，与 cargo 构建组合无关）。
+rustls = { version = "0.23", features = ["ring"], optional = true }
+
+[features]
+default = ["real"]
+real = ["dep:webrtc", "dep:rtp", "dep:rustls"]
+
+[dev-dependencies]
+signaling-svc = { path = "../../../cloud/crates/signaling-svc" }
+rdcore-signaling = { path = "../../../core/crates/rdcore-signaling" }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time", "net"] }
+# 内嵌 TURN 服务器，用于 P0-D「公网 NAT 穿透」中继路径的端到端验证（自包含、无需外部服务）。
+# 版本与 lockfile 中 webrtc 0.12 拉入的 turn / webrtc-util 保持一致。
+turn = "0.9"
+webrtc-util = "0.10"

@@ -1,0 +1,20 @@
+# TLS 终结 + wss 反代（signaling-svc 内网明文，caddy 对外 wss）。
+# {$DOMAIN} 来自 docker-compose environment。
+
+{$DOMAIN} {
+	# 信令 WebSocket：wss://domain/signaling/<32hex session_id>?token=...
+	# 保留完整路径与 query 转发给内网 signaling-svc（其按 path 取 session_id、按 query 取 token）。
+	handle_path /signaling/* {
+		reverse_proxy signaling:8080
+	}
+
+	# 健康检查。
+	handle /healthz {
+		respond "ok" 200
+	}
+
+	# 其余一律 404（控制平面不暴露多余面）。
+	handle {
+		respond "not found" 404
+	}
+}

@@ -1,0 +1,13 @@
+# P0 契约层 · 线协议 crate：定义消息枚举、帧元数据、错误码，使用 postcard 紧凑编码。
+[package]
+name = "rdcore-proto"
+version = "0.1.0"
+edition = "2021"
+description = "Remote-desktop wire protocol: signaling, input, clipboard, heartbeat messages + frame metadata. Compact postcard encoding."
+license = "AGPL-3.0-only"
+
+[dependencies]
+rdcore-identity = { path = "../rdcore-identity" }
+rdcore-crypto = { path = "../rdcore-crypto" }
+serde = { version = "1", features = ["derive"] }
+postcard = { version = "1", features = ["use-std"] }

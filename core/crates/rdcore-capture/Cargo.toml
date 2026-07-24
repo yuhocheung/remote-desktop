@@ -1,0 +1,26 @@
+# rdcore-capture — 真实画面捕获 / 输入注入的边界 crate（P7）。
+#
+# 架构上 Host 端需要两件事：把屏幕变成 `MediaFrame`（捕获），把收到的 `InputEvent` 作用到本机（注入）。
+# P1 用合成后端（SyntheticFrameSource / RecordingInputInjector）跑通了管线；本 crate 把"真实后端"的
+# 接缝定义出来，并给出 headless 的 Null 实现，供测试 / 无显示器环境使用。
+#
+# 真实后端（scrap 抓屏 + enigo 注入）默认不启用（`real` feature），以免引入原生 SDK 构建依赖；
+# 启用后由 `src/real.rs` 提供 `ScrapCaptureSource` / `EnigoInputInjector` 的真实实现。
+# 在原生工具链里用 `cargo build -p rdcore-capture --features real` 验证。
+
+[package]
+name = "rdcore-capture"
+version = "0.1.0"
+edition = "2021"
+description = "Real screen capture / input injection boundary (P7)."
+license = "AGPL-3.0-only"
+
+[dependencies]
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+# 真实后端依赖（仅 `--features real` 时启用）。
+scrap = { version = "0.5", optional = true }
+enigo = { version = "=0.5.0", optional = true }
+
+[features]
+# 真实后端（scrap 抓屏 + enigo 注入）。默认关闭，避免引入原生 SDK 构建依赖。
+real = ["dep:scrap", "dep:enigo"]

@@ -1,0 +1,49 @@
+[package]
+name = "rdcore-desktop"
+version = "0.1.0"
+edition = "2021"
+description = "Windows Host Agent (background service) for the remote-desktop control system."
+license = "AGPL-3.0-only"
+
+[[bin]]
+name = "rdcore-desktop"
+path = "src/main.rs"
+
+[dependencies]
+# 编排层：Connection / HostMediaPump / 配对 / 同意门控（B 预写信令/配对/重连骨架）
+rdcore-app = { path = "../rdcore-app" }
+# 信令客户端（Connection::new_host 内部已用，Agent 侧仅用于类型/URL 构造）
+rdcore-signaling = { path = "../rdcore-signaling" }
+# 真实捕获 / 注入（scrap + enigo）；headless 时回退 Null 实现（A 填抓屏）
+rdcore-capture = { path = "../rdcore-capture", features = ["real"] }
+# 真实 WebRTC（含 gap J 的 RTP 视频轨道）；Connection 内部持有 peer
+rdcore-rtc = { path = "../rdcore-rtc", features = ["real"] }
+# OS 不可伪造横幅：本进程只作「状态推送方」，故只需 lib（BannerClient + consent 映射）。
+# 真实的 windows-native 置顶窗口由**独立**的 `rdcore-banner` 二进制（另行以
+# `--features windows-native,consent` 构建）提供，Host Agent 以子进程方式拉起它（A 填横幅）。
+rdcore-banner = { path = "../rdcore-banner", features = ["consent"] }
+# 同意 / 授权决定（Host 侧下发 ConsentDecision::Grant）
+rdcore-consent = { path = "../rdcore-consent" }
+# 身份 / 加密 / 协议原语
+rdcore-identity = { path = "../../../shared/rdcore-identity" }
+rdcore-crypto = { path = "../../../shared/rdcore-crypto" }
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+rdcore-session = { path = "../rdcore-session" }
+
+tokio = { version = "1", features = ["full"] }
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+hex = "0.4"
+# 终端二维码渲染（仅 unicode 文本输出，禁用 image/svg 特性避免重型依赖）
+qrcode = { version = "0.14", default-features = false }
+
+[features]
+default = []
+# Windows：启用 SCM 封装（install/uninstall/service 子命令）；
+# macOS：同一 feature 启用 launchd 封装（src/service_macos.rs）。
+service = ["dep:windows-service"]
+
+# Windows 服务封装：仅 Windows + `service` feature 编译，避免拖慢默认（测试/headless）构建。
+[target.'cfg(windows)'.dependencies]
+windows-service = { version = "0.6", optional = true }
+windows-sys = { version = "0.52", features = ["Win32_Foundation", "Win32_Security", "Win32_System_JobObjects"] }

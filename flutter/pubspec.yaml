@@ -1,0 +1,48 @@
+name: remote_desktop
+description: Flutter UI for the Rust-core remote desktop control system (P6).
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # dart:ffi 的辅助（toNativeUtf8 / allocate 等）。
+  ffi: ^2.1.0
+  cupertino_icons: ^1.0.8
+  # Track B（kimi-k3）扫码配对（B3）：Host 渲染 QR、Viewer 相机扫码。
+  # 使用成熟库（QR 编码/扫码是易错的标准化逻辑，不自实现）。
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^5.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  # 品牌字体（已下载到 assets/fonts，离线打包，无需运行时联网）：
+  # - Inter：App 全局 UI 字体（CJK 由系统字体自动回退）。
+  # - JetBrains Mono：配对码 / 令牌等等宽展示，等宽对齐、易辨认。
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/JetBrainsMono-Bold.ttf
+          weight: 700

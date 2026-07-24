@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  rust:
+    name: Rust (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # 三平台均编译 + 测试，提前暴露跨平台编译问题（缺口 I）。
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: fmt
+        run: cargo fmt --all -- --check
+      - name: clippy
+        # -D warnings：保持与双轨契约一致的质量门禁（不允许 warning 合入）。
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: test
+        run: cargo test --workspace
+      - name: build (release)
+        run: cargo build --workspace --release
+
+  deny:
+    name: cargo-deny (license / advisories / bans / sources)
+    runs-on: ubuntu-latest
+    # 许可 / 漏洞 / 依赖源检查与平台无关，独立作业跑一次即可，不进三 OS 矩阵。
+    # 本仓 21 个自有 AGPL crate 经 deny.toml exceptions 豁免（见文件注释）；
+    # 第三方 AGPL 依赖进入依赖图会在此 fail —— 即 roadmap「许可红旗」的自动化门禁。
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+
+  flutter:
+    name: Flutter (analyze + test)
+    runs-on: ubuntu-latest
+    env:
+      # Track B（kimi-k3）：pub.dev 下载 CDN(storage.googleapis.com)在中国大陆被墙，
+      # 用 flutter-io.cn 镜像同时代理 API 与下载（见 scripts/pub_mirror.sh）。
+      PUB_HOSTED_URL: https://pub.flutter-io.cn
+      FLUTTER_STORAGE_BASE_URL: https://storage.flutter-io.cn
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: analyze
+        working-directory: flutter
+        run: flutter pub get && flutter analyze
+      - name: test
+        working-directory: flutter
+        run: flutter test
+
+  flutter-ios:
+    name: Flutter (iOS build gate)
+    runs-on: macos-latest
+    env:
+      PUB_HOSTED_URL: https://pub.flutter-io.cn
+      FLUTTER_STORAGE_BASE_URL: https://storage.flutter-io.cn
+    # 缺口 I：macOS/iOS 目前仅产出 staticlib、未真机集成。此作业作为"iOS 构建不回归"闸，
+    # 用 continue-on-error 让问题在摘要可见但不阻塞合并，待 iOS 集成正式完成后可去掉。
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: iOS build (no codesign)
+        working-directory: flutter
+        run: flutter pub get && flutter build ios --no-codesign

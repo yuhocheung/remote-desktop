@@ -1,0 +1,33 @@
+# 浏览器 Viewer 的 WASM 核心：shared/* 三 crate（协议/加密/身份）的 wasm-bindgen facade。
+# crate 内只做「内存身份 + 握手状态机 + 帧管线」；身份持久化交给 TS/IndexedDB。
+[package]
+name = "rdcore-web"
+version = "0.1.0"
+edition = "2021"
+description = "WASM facade (wasm-bindgen) of rdcore shared crates for the browser Viewer: identity, signed handshake, E2E frame pipeline."
+license = "AGPL-3.0-only"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+rdcore-proto = { path = "../../shared/rdcore-proto" }
+rdcore-crypto = { path = "../../shared/rdcore-crypto" }
+rdcore-identity = { path = "../../shared/rdcore-identity" }
+# AppMessage::Consent 的负载类型（ConsentDecision）：直接复用，保证与 rdcore-app 线格式逐字节一致。
+rdcore-consent = { path = "../../core/crates/rdcore-consent" }
+# wasm-bindgen 库必须与 CLI 严格同版本（0.2.126），否则生成绑定时版本校验失败。
+wasm-bindgen = "=0.2.126"
+# 由固定种子派生公钥（确定性测试向量用）；与 rdcore-crypto 内部同一后端。
+ed25519-dalek = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+postcard = { version = "1", features = ["use-std"] }
+# js feature 可传递启用 shared/* 内 getrandom 的浏览器后端（仅 wasm32 生效；原生仍走 OS RNG）。
+getrandom = { version = "0.2", features = ["js"] }
+sha2 = "0.10"
+chacha20poly1305 = "0.10"
+
+[dev-dependencies]
+# M0 互认证据：测试直接调用 Host 侧 rdcore-session 的验签 / 密钥派生函数做交叉验证。
+rdcore-session = { path = "../../core/crates/rdcore-session" }

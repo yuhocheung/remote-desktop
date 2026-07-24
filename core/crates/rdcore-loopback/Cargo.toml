@@ -1,0 +1,17 @@
+# rdcore-loopback — P1 本地回环验证
+#
+# 在单个进程内用"假传输 + 假后端"把整条管线（capture→encode→decode→render + input）
+# 跑通，并复用 rdcore-proto 做真实 postcard 编解码，验证 P0 契约在传输中可用。
+#
+# 本 crate 没有任何真实网络 / 平台代码：捕获是合成的、视频用 Raw 直传、渲染只是
+# 缓冲、输入只是记录。真正的平台 / 编解码后端在 P3 替换，只要满足这里的 trait。
+
+[package]
+name = "rdcore-loopback"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-only"
+
+[dependencies]
+# 复用 P0 契约层：Message 族 + postcard 编解码 + 安全上限。
+rdcore-proto = { path = "../../../shared/rdcore-proto" }

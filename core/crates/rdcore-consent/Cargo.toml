@@ -1,0 +1,16 @@
+[package]
+name = "rdcore-consent"
+version = "0.1.0"
+edition = "2021"
+description = "Consent gate and unspoofable banner policy."
+license = "AGPL-3.0-only"
+
+[dependencies]
+# 内部依赖：需要 P4 的 VerifiedPeer（已认证对端）+ 指纹类型。
+rdcore-crypto = { path = "../../../shared/rdcore-crypto" }
+rdcore-identity = { path = "../../../shared/rdcore-identity" }
+rdcore-proto = { path = "../../../shared/rdcore-proto" }
+rdcore-session = { path = "../rdcore-session" }
+# 仅用于把 SecurityIndicator / ConnectionState 序列化成 JSON 提供给 Flutter UI 渲染
+# （P6：横幅 / 状态展示）。expires_at(Instant) 不可序列化，已用 #[serde(skip)] 处理。
+serde = { version = "1", features = ["derive"] }

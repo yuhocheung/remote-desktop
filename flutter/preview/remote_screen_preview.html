@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>远程桌面 · 连接页 UI 预览</title>
+<style>
+  :root{
+    --primary:#2f6fed; --primary-container:#dbe6ff; --on-primary:#ffffff; --on-primary-container:#0a2a73;
+    --surface:#ffffff; --surface-lowest:#f6f8fb; --surface-high:#f1f3f6; --surface-highest:#e9edf2;
+    --outline:#dfe3ea; --outline-variant:#dfe3ea;
+    --on-surface:#1a1c1f; --on-surface-variant:#5b6472;
+    --error:#b3261e; --error-container:#f9dedc; --on-error-container:#8c1d18;
+    --green:#1f8a4c; --orange:#c5701a;
+    --radius:22px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--font);background:#eef1f6;color:var(--on-surface);
+    display:flex;flex-direction:column;align-items:center;padding:28px 16px 48px;}
+  h1{font-size:18px;font-weight:700;margin:0 0 4px;}
+  .sub{font-size:13px;color:var(--on-surface-variant);margin-bottom:18px;}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:22px;max-width:640px;}
+  .tab{border:1px solid var(--outline);background:var(--surface);color:var(--on-surface-variant);
+    padding:8px 14px;border-radius:999px;font-size:13px;cursor:pointer;transition:.15s;}
+  .tab:hover{border-color:var(--primary);color:var(--primary);}
+  .tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+  /* phone frame */
+  .phone{width:390px;height:800px;background:var(--surface);border-radius:38px;
+    box-shadow:0 30px 70px rgba(20,30,60,.22),0 2px 0 #fff inset;overflow:hidden;
+    border:10px solid #0e1116;position:relative;display:flex;flex-direction:column;}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:140px;height:26px;
+    background:#0e1116;border-radius:0 0 16px 16px;z-index:5;}
+  .screen{flex:1;display:flex;flex-direction:column;min-height:0;padding-top:34px;}
+  /* security banner */
+  .secbar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--surface-highest);
+    border-bottom:1px solid rgba(0,0,0,.05);}
+  .sec-ic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex:none;}
+  .sec-ic.g{background:rgba(31,138,76,.14);color:var(--green);}
+  .sec-ic.o{background:rgba(197,112,26,.14);color:var(--orange);}
+  .sec-tx{flex:1;min-width:0;}
+  .sec-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sec-fp{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--on-surface-variant);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .chip{font-size:11px;font-weight:600;padding:5px 10px;border-radius:999px;white-space:nowrap;}
+  .chip.g{background:rgba(31,138,76,.14);color:var(--green);border:1px solid rgba(31,138,76,.35);}
+  .chip.o{background:rgba(197,112,26,.14);color:var(--orange);border:1px solid rgba(197,112,26,.35);}
+  /* stage */
+  .stage{flex:1;min-height:0;background:linear-gradient(180deg,var(--surface),var(--surface-lowest));
+    display:flex;padding:24px;}
+  .card{margin:auto;width:100%;max-width:420px;background:var(--surface-high);border-radius:var(--radius);
+    border:1px solid rgba(0,0,0,.06);padding:32px 28px;display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .ic-circle{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;margin-bottom:20px;}
+  .title{font-size:21px;font-weight:700;letter-spacing:.2px;margin:0;}
+  .desc{font-size:14px;color:var(--on-surface-variant);line-height:1.5;margin:10px 0 0;}
+  .detail{width:100%;margin-top:22px;}
+  .box{width:100%;background:var(--surface-highest);border-radius:14px;padding:14px;font-size:13px;
+    line-height:1.5;color:var(--on-surface);text-align:left;word-break:break-word;max-height:170px;overflow:auto;}
+  .box.err{background:rgba(179,38,30,.12);color:var(--on-error-container);}
+  .actions{margin-top:26px;display:flex;flex-direction:column;gap:10px;width:100%;}
+  .btn{border:none;border-radius:14px;padding:13px 16px;font-size:15px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;}
+  .btn.primary{background:var(--primary);color:#fff;}
+  .btn.tone{background:var(--error-container);color:var(--on-error-container);}
+  .btn.outline{background:transparent;border:1px solid var(--outline);color:var(--on-surface-variant);}
+  .btn.text{background:transparent;color:var(--primary);}
+  /* stepper */
+  .steps{display:flex;flex-direction:column;gap:8px;width:100%;}
+  .step-row{display:flex;align-items:center;}
+  .node{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;
+    border:2px solid var(--outline-variant);font-size:11px;font-weight:600;color:var(--on-surface-variant);}
+  .node.done{background:var(--primary);border-color:var(--primary);color:#fff;}
+  .node.cur{border-color:var(--primary);}
+  .bar{flex:1;height:2px;margin:0 6px;border-radius:2px;background:var(--outline-variant);}
+  .bar.done{background:var(--primary);}
+  .step-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--on-surface-variant);}
+  .spin{width:30px;height:30px;border:3px solid rgba(10,42,115,.25);border-top-color:var(--on-primary-container);
+    border-radius:50%;animation:spin 1s linear infinite;}
+  .spin.sm{width:14px;height:14px;border-width:2.5px;border-color:rgba(47,111,237,.3);border-top-color:var(--primary);}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  /* active viewer */
+  .viewer{flex:1;display:flex;flex-direction:column;min-height:0;padding:12px;}
+  .frame{flex:1;border:1px solid var(--outline);border-radius:16px;overflow:hidden;
+    background:radial-gradient(120% 120% at 30% 20%,#2a3550,#11151f);position:relative;}
+  .frame .ghost{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.25);font-size:13px;}
+  .vbar{padding:10px 14px 14px;}
+  .help{font-size:11px;color:var(--on-surface-variant);line-height:1.4;text-align:center;margin-bottom:10px;}
+  .ctrls{display:flex;align-items:center;gap:8px;}
+  .audio{flex:1;display:flex;align-items:center;gap:6px;min-width:0;}
+  .audio .vol{width:80px;}
+  .audio .lvl{width:60px;height:8px;border-radius:6px;background:var(--surface-highest);overflow:hidden;}
+  .audio .lvl i{display:block;height:100%;width:55%;background:var(--primary);}
+  .muted{color:var(--primary);background:none;border:none;cursor:pointer;font-size:20px;}
+  /* active host */
+  .host-ic{background:var(--primary-container);color:var(--on-primary-container);}
+  .hidden{display:none!important;}
+  .legend{font-size:12px;color:var(--on-surface-variant);margin-top:18px;max-width:420px;text-align:center;line-height:1.6;}
+</style>
+</head>
+<body>
+  <h1>远程桌面 · 连接页 UI 预览</h1>
+  <div class="sub">Material 3 设计令牌 · 统一字阶与圆角 · 柔和渐变背景 · 消除黑屏/刺眼红字/文字遮挡</div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-s="connecting">连接中</button>
+    <button class="tab" data-s="awaiting">等待批准</button>
+    <button class="tab" data-s="error">连接失败</button>
+    <button class="tab" data-s="viewer">已激活·Viewer</button>
+    <button class="tab" data-s="host">已激活·Host</button>
+    <button class="tab" data-s="denied">已拒绝</button>
+    <button class="tab" data-s="closed">已关闭</button>
+  </div>
+
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen" id="screen"><!-- filled by JS --></div>
+  </div>
+
+  <div class="legend">
+    预览为静态还原，真实交互（进度环、步骤推进、音频电平、远端画面）由 Flutter 代码在 iPhone 上呈现。
+  </div>
+
+<script>
+const sec = (name,fp,enc)=>`
+  <div class="secbar">
+    <div class="sec-ic ${enc?'g':'o'}">${enc?'🔒':'🔓'}</div>
+    <div class="sec-tx">
+      <div class="sec-name">对端：${name}</div>
+      <div class="sec-fp">指纹 ${fp}</div>
+    </div>
+    <div class="chip ${enc?'g':'o'}">${enc?'E2E 已加密':'未加密'}</div>
+  </div>`;
+
+const steps=(active)=>{
+  const labels=['发起连接','协商加密通道','等待主机批准'];
+  let row='<div class="step-row">';
+  labels.forEach((l,i)=>{
+    const cls=i<active?'done':(i===active?'cur':'');
+    const inner=i<active?'✓':(i===active?'<div class="spin sm"></div>':(i+1));
+    row+=`<div class="node ${cls}">${inner}</div>`;
+    if(i<labels.length-1) row+=`<div class="bar ${i<active?'done':''}"></div>`;
+  });
+  row+='</div>';
+  let labs='<div class="step-labels">'+labels.map(l=>`<span>${l}</span>`).join('')+'</div>';
+  return `<div class="steps">${row}${labs}</div>`;
+};
+
+const screens={
+  connecting:()=>`${sec('Windows-PC-01','9F:2C:7A:14:B8:EE:53:06','1')}
+    <div class="stage"><div class="card">
+      <div class="ic-circle" style="background:var(--primary-container)"><div class="spin"></div></div>
+      <h2 class="title">正在建立安全连接</h2>
+      <p class="desc">正在与主机协商端到端加密通道，请稍候…</p>
+      <div class="detail">${steps(2)}</div>
+      <div class="actions"><button class="btn text">取消</button></div>
+    </div></div>`,
+
+  awaiting:()=>`${sec('Windows-PC-01','9F:2C:7A:14:B8:EE:53:06','1')}
+    <div class="stage"><div class="card">
+      <div class="ic-circle" style="background:var(--primary-container)"><div class="spin"></div></div>
+      <h2 class="title">等待主机批准</h2>
+      <p class="desc">已在加密通道中送达请求。请在 Windows 主机弹出的同意窗口中点击「允许」。</p>
+      <div class="detail">${steps(3)}</div>
+      <div class="actions">
+        <button class="btn outline">未弹出批准窗口？</button>
+        <button class="btn text">取消</button>
+      </div>
+    </div></div>`,
+
+  error:()=>`${sec('未知设备','—','0')}
+    <div class="stage"><div class="card">
+      <div class="ic-circle" style="background:var(--error-container)">
+        <span style="color:var(--error);font-size:30px">⚠</span></div>
+      <h2 class="title">连接失败</h2>
+      <p class="desc">无法与主机建立端到端连接，请检查下方原因后重试。</p>
+      <div class="detail"><div class="box err">连接超时（120s）：未收到对端批准，或信令 / ICE 未能建立。请确认：① 被控端程序已运行并已在弹出的同意请求上点击「允许」；② 双方网络可达（跨网 / 对称 NAT 需配置 TURN）；③ 信令服务器地址正确（见 App 设置页）。</div></div>
+      <div class="actions"><button class="btn primary">返回</button></div>
+    </div></div>`,
+
+  viewer:()=>`${sec('Windows-PC-01','9F:2C:7A:14:B8:EE:53:06','1')}
+    <div class="viewer">
+      <div class="frame"><div class="ghost">远端画面（实时渲染）</div></div>
+      <div class="vbar">
+        <div class="help">鼠标：点按 / 拖动 / 滚轮　·　触摸：单指点按=左键、长按=右键、双指拖动=滚轮　·　键盘自动捕获</div>
+        <div class="ctrls">
+          <div class="audio">
+            <button class="muted">🔊</button>
+            <span style="font-size:12px">音量</span>
+            <input class="vol" type="range" min="0" max="100" value="100">
+            <div class="lvl"><i></i></div>
+          </div>
+          <button class="btn tone" style="padding:10px 14px">断开</button>
+        </div>
+      </div>
+    </div>`,
+
+  host:()=>`${sec('iPhone-14-Pro','3A:88:0D:5E:21:C4:9B:7F','1')}
+    <div class="stage"><div class="card">
+      <div class="ic-circle host-ic"><span style="font-size:30px">💻</span></div>
+      <h2 class="title">正在控制对方设备</h2>
+      <p class="desc">连接已激活，输入由本机经加密通道送达对方。</p>
+      <div class="detail"><div class="box">
+        <div style="font-size:11px;color:var(--on-surface-variant);margin-bottom:4px">最近一次输入</div>
+        <div style="font-size:13px">MouseMove(1280, 720)</div>
+        <div style="font-size:11px;color:var(--on-surface-variant);margin-top:8px">音频抓取由本机后台线程推送，对方侧播放</div>
+      </div></div>
+      <div class="actions"><button class="btn tone">断开</button></div>
+    </div></div>`,
+
+  denied:()=>`${sec('Windows-PC-01','9F:2C:7A:14:B8:EE:53:06','0')}
+    <div class="stage"><div class="card">
+      <div class="ic-circle" style="background:var(--error-container)">
+        <span style="color:var(--error);font-size:30px">⛔</span></div>
+      <h2 class="title">连接已被拒绝</h2>
+      <p class="desc">主机方未批准本次连接请求。请确认授权范围后重新发起配对。</p>
+      <div class="actions"><button class="btn primary">返回</button></div>
+    </div></div>`,
+
+  closed:()=>`${sec('Windows-PC-01','9F:2C:7A:14:B8:EE:53:06','1')}
+    <div class="stage"><div class="card">
+      <div class="ic-circle" style="background:var(--surface-highest)">
+        <span style="color:var(--on-surface-variant);font-size:30px">⏻</span></div>
+      <h2 class="title">连接已关闭</h2>
+      <p class="desc">本次远程会话已正常结束。</p>
+      <div class="actions"><button class="btn primary">返回</button></div>
+    </div></div>`,
+};
+
+function render(s){
+  document.getElementById('screen').innerHTML = screens[s]();
+}
+document.getElementById('tabs').addEventListener('click',e=>{
+  const b=e.target.closest('.tab'); if(!b) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  b.classList.add('active');
+  render(b.dataset.s);
+});
+render('connecting');
+</script>
+</body>
+</html>
